@@ -356,6 +356,28 @@ const UserManagement = () => {
         }
     };
 
+    const handleSyncMailchimp = async () => {
+        if (!window.confirm('Are you sure you want to sync all user points to Mailchimp? This may take a few moments.')) return;
+
+        try {
+            const response = await fetch('/api/sync-mailchimp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(`Sync Complete!\n\nSuccessful Updates: ${data.stats?.successful_updates || 0}\nFailed Updates: ${data.stats?.failed_updates || 0}`);
+            } else {
+                console.error('Sync failed response:', data);
+                alert(`Sync Failed: ${data.error || 'Unknown error'}\n${data.details || ''}`);
+            }
+        } catch (error) {
+            console.error('Error syncing Mailchimp:', error);
+            alert('Error syncing Mailchimp. Check console for details.');
+        }
+    };
+
     // Initialize data
     useEffect(() => {
         const fetchAllData = async () => {
@@ -383,6 +405,15 @@ const UserManagement = () => {
     return (
         <div className="admin-page">
             <h1>User Management</h1>
+            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+                <button
+                    className="add"
+                    onClick={handleSyncMailchimp}
+                    style={{ backgroundColor: '#FFE01B', color: '#000', fontWeight: 'bold' }}
+                >
+                    Sync Mailchimp Points
+                </button>
+            </div>
 
             {/* Add user section */}
             <div className="admin-add-user">
