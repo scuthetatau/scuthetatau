@@ -32,44 +32,49 @@ export default async function handler(req, res) {
         const updates = [];
         const errors = [];
 
-        // 2. Iterate and prepare updates
-        // We will process them appropriately. For a large number of users, batch operations are better,
-        // but for < 1000 users, sequential or parallel promises are okay. Let's do parallel with a limit if needed.
-        // For Vercel timeouts, we might want to be careful, but let's try a Promise.all for now as it's likely <100 active members.
+        // Helper for delay
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        const updatePromises = usersSnapshot.docs.map(async (doc) => {
-            const userData = doc.data();
-            const email = userData.email;
-            const points = userData.points || 0;
+        // 2. Process in Batches to respect Rate Limits
+        const BATCH_SIZE = 5;
+        const docs = usersSnapshot.docs;
 
-            if (!email) return;
+        for (let i = 0; i < docs.length; i += BATCH_SIZE) {
+            const chunk = docs.slice(i, i + BATCH_SIZE);
 
-            const subscriberHash = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
+            const chunkPromises = chunk.map(async (doc) => {
+                const userData = doc.data();
+                const email = userData.email;
+                const points = userData.points || 0;
 
-            try {
-                // Upsert member (Add or Update)
-                await mailchimp.lists.setListMember(listId, subscriberHash, {
-                    email_address: email,
-                    status_if_new: 'subscribed', // Only subscribe if they are new. If they are unsubscribed, this might resubscribe them? 
-                    // Actually setListMember creates or updates. 
-                    // Important: If a user is 'unsubscribed', we shouldn't force them back to 'subscribed' usually.
-                    // But if we omit status, it might define it. 
-                    // Let's use 'status_if_new'.
+                if (!email) return;
 
-                    merge_fields: {
-                        POINTS: points,
-                        FNAME: userData.firstName || '',
-                        LNAME: userData.lastName || ''
-                    }
-                });
-                updates.push({ email, points, status: 'synced' });
-            } catch (err) {
-                console.error(`Failed to sync ${email}:`, err.response?.text || err.message);
-                errors.push({ email, error: err.response?.body?.title || err.message });
+                const subscriberHash = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
+
+                try {
+                    await mailchimp.lists.setListMember(listId, subscriberHash, {
+                        email_address: email,
+                        status_if_new: 'subscribed',
+                        merge_fields: {
+                            POINTS: points,
+                            FNAME: userData.firstName || '',
+                            LNAME: userData.lastName || ''
+                        }
+                    });
+                    updates.push({ email, points, status: 'synced' });
+                } catch (err) {
+                    // console.error(`Failed to sync ${email}:`, err.response?.text || err.message);
+                    errors.push({ email, error: err.response?.body?.title || err.message });
+                }
+            });
+
+            await Promise.all(chunkPromises);
+
+            // Add a small delay between batches
+            if (i + BATCH_SIZE < docs.length) {
+                await delay(1000); // 1 second delay between batches
             }
-        });
-
-        await Promise.all(updatePromises);
+        }
 
         console.log(`Sync complete. Success: ${updates.length}, Errors: ${errors.length}`);
         return res.status(200).json({
