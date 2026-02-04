@@ -72,7 +72,7 @@ export default async function handler(req, res) {
 
             // Add a small delay between batches
             if (i + BATCH_SIZE < docs.length) {
-                await delay(1000); // 1 second delay between batches
+                await delay(100); // 0.1 second delay between batches
             }
         }
 

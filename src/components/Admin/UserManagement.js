@@ -366,13 +366,21 @@ const UserManagement = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
             });
-            const data = await response.json();
+
+            const text = await response.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (jsonError) {
+                // If it's not JSON, it's likely a Vercel 500/504 HTML error page
+                console.error('Server returned non-JSON:', text);
+                throw new Error(`Server Error (${response.status}): The sync timed out or crashed. Try syncing fewer users or check server logs.`);
+            }
 
             setSyncResults(data); // Store results to show in UI
 
             if (response.ok) {
-                // We'll let the UI display the details now instead of just an alert
-                // alert(`Sync Complete!\n\nSuccessful Updates: ${data.stats?.successful_updates || 0}\nFailed Updates: ${data.stats?.failed_updates || 0}`);
+                // Success
             } else {
                 console.error('Sync failed response:', data);
                 // Still alert on critical failure
