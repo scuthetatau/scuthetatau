@@ -1,10 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import iotaClass from '../assets/IotaClass.JPG';
 import rushInfoNight from '../assets/Rush_Info_Night_2026.JPG';
 import './Rush.css';
 
 const Rush = () => {
+    const [timeLeft, setTimeLeft] = useState({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0
+    });
+
     useEffect(() => {
+        // Countdown Logic for Rush 2027 (Jan 6, 2027)
+        const targetDate = new Date('January 6, 2027 18:00:00').getTime();
+
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            if (difference > 0) {
+                setTimeLeft({
+                    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+                    hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+                    minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+                    seconds: Math.floor((difference % (1000 * 60)) / 1000)
+                });
+            } else {
+                clearInterval(timer);
+            }
+        }, 1000);
+
         // Scroll Reveal
         const observerOptions = {
             threshold: 0.1
@@ -32,6 +58,7 @@ const Rush = () => {
 
         return () => {
             // Cleanup
+            clearInterval(timer);
             observer.disconnect();
             window.removeEventListener('scroll', handleScroll);
         };
@@ -51,10 +78,35 @@ const Rush = () => {
                 </div>
                 <div className="relative z-10 text-center px-4">
                     <h1 className="font-anton text-7xl md:text-9xl text-white uppercase tracking-tighter leading-none mb-4 drop-shadow-2xl" id="hero-text">
-                        WINTER RUSH <span className="text-accent">2026</span>
+                        RUSH <span className="text-accent">2027</span>
                     </h1>
                     <p className="text-xl md:text-2xl text-gray-300 font-playfair italic mb-8 reveal active">Excellence through Brotherhood.</p>
-                    <div className="flex flex-col md:flex-row gap-4 justify-center items-center reveal active" style={{ transitionDelay: "200ms" }}>
+
+                    {/* Countdown Timer */}
+                    <div className="flex gap-4 md:gap-8 justify-center mb-12 reveal active" style={{ transitionDelay: "200ms" }}>
+                        <div className="text-center countdown-unit">
+                            <div className="text-4xl md:text-6xl font-anton text-white">{timeLeft.days}</div>
+                            <div className="text-xs md:text-sm text-accent uppercase tracking-widest font-bold">Days</div>
+                        </div>
+                        <div className="text-4xl md:text-6xl font-anton text-white flex items-center">:</div>
+                        <div className="text-center countdown-unit">
+                            <div className="text-4xl md:text-6xl font-anton text-white">{timeLeft.hours}</div>
+                            <div className="text-xs md:text-sm text-accent uppercase tracking-widest font-bold">Hours</div>
+                        </div>
+                        <div className="text-4xl md:text-6xl font-anton text-white flex items-center">:</div>
+                        <div className="text-center countdown-unit">
+                            <div className="text-4xl md:text-6xl font-anton text-white">{timeLeft.minutes}</div>
+                            <div className="text-xs md:text-sm text-accent uppercase tracking-widest font-bold">Mins</div>
+                        </div>
+                        <div className="text-4xl md:text-6xl font-anton text-white flex items-center">:</div>
+                        <div className="text-center countdown-unit">
+                            <div className="text-4xl md:text-6xl font-anton text-white">{timeLeft.seconds}</div>
+                            <div className="text-xs md:text-sm text-accent uppercase tracking-widest font-bold">Secs</div>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row gap-4 justify-center items-center reveal active" style={{ transitionDelay: "400ms" }}>
+                        {/* 
                         <a className="group relative px-8 py-4 bg-accent text-black font-bold uppercase tracking-widest rounded-sm overflow-hidden transition-all hover:pr-12" href="https://forms.gle/jveLESqs2rSRiBsN8" target="_blank" rel="noreferrer">
                             <span className="relative z-10">Application Open</span>
                             <span className="material-icons-outlined absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all">arrow_forward</span>
@@ -62,6 +114,7 @@ const Rush = () => {
                         <a className="px-8 py-4 border-2 border-white text-white font-bold uppercase tracking-widest rounded-sm hover:bg-white hover:text-black transition-all" href="#schedule">
                             View Schedule
                         </a>
+                        */}
                     </div>
                 </div>
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
