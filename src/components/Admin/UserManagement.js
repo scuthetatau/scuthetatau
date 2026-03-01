@@ -79,6 +79,7 @@ const UserManagement = () => {
     const [editingAlumni, setEditingAlumni] = useState(null);
     const [profilePictureEdit, setProfilePictureEdit] = useState(null);
     const [alumniProfilePictureEdit, setAlumniProfilePictureEdit] = useState(null);
+    const [syncResults, setSyncResults] = useState(null);
 
     // Form state
     const [newUser, setNewUser] = useState({
@@ -356,6 +357,41 @@ const UserManagement = () => {
         }
     };
 
+    const handleSyncMailchimp = async () => {
+        if (!window.confirm('Are you sure you want to sync all user points to Mailchimp? This may take a few moments.')) return;
+
+        setSyncResults(null); // Clear previous results
+        try {
+            const response = await fetch('/api/sync-mailchimp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            const text = await response.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (jsonError) {
+                // If it's not JSON, it's likely a Vercel 500/504 HTML error page
+                console.error('Server returned non-JSON:', text);
+                throw new Error(`Server Error (${response.status}): The sync timed out or crashed. Try syncing fewer users or check server logs.`);
+            }
+
+            setSyncResults(data); // Store results to show in UI
+
+            if (response.ok) {
+                // Success
+            } else {
+                console.error('Sync failed response:', data);
+                // Still alert on critical failure
+                alert(`Sync Critical Failure: ${data.error || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error syncing Mailchimp:', error);
+            alert('Error syncing Mailchimp. Check console for details.');
+        }
+    };
+
     // Initialize data
     useEffect(() => {
         const fetchAllData = async () => {
@@ -383,6 +419,74 @@ const UserManagement = () => {
     return (
         <div className="admin-page">
             <h1>User Management</h1>
+            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+                <button
+                    className="add"
+                    onClick={handleSyncMailchimp}
+                    style={{ backgroundColor: '#FFE01B', color: '#000', fontWeight: 'bold' }}
+                >
+                    Sync Mailchimp Points
+                </button>
+            </div>
+
+            {syncResults && (
+                <div style={{
+                    marginBottom: '30px',
+                    padding: '20px',
+                    backgroundColor: '#1E293B',
+                    color: 'white',
+                    borderRadius: '10px',
+                    border: '1px solid #334155'
+                }}>
+                    <h3>Sync Results</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '15px' }}>
+                        <div style={{ padding: '10px', backgroundColor: 'rgba(34, 197, 94, 0.2)', borderRadius: '5px', textAlign: 'center' }}>
+                            <strong style={{ color: '#4ade80', display: 'block', fontSize: '1.5em' }}>{syncResults.stats?.successful_updates || 0}</strong>
+                            <span style={{ fontSize: '0.9em' }}>Successful Updates</span>
+                        </div>
+                        <div style={{ padding: '10px', backgroundColor: 'rgba(239, 68, 68, 0.2)', borderRadius: '5px', textAlign: 'center' }}>
+                            <strong style={{ color: '#f87171', display: 'block', fontSize: '1.5em' }}>{syncResults.stats?.failed_updates || 0}</strong>
+                            <span style={{ fontSize: '0.9em' }}>Failed Updates</span>
+                        </div>
+                    </div>
+
+                    {syncResults.errors && syncResults.errors.length > 0 && (
+                        <div style={{ marginTop: '15px' }}>
+                            <h4 style={{ color: '#f87171', marginBottom: '10px' }}>Failed Emails Details:</h4>
+                            <div style={{
+                                maxHeight: '200px',
+                                overflowY: 'auto',
+                                backgroundColor: '#0f172a',
+                                padding: '10px',
+                                borderRadius: '5px',
+                                fontSize: '0.85em',
+                                fontFamily: 'monospace'
+                            }}>
+                                {syncResults.errors.map((err, idx) => (
+                                    <div key={idx} style={{ borderBottom: '1px solid #334155', padding: '5px 0', display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#e2e8f0' }}>{err.email}</span>
+                                        <span style={{ color: '#f87171' }}>{err.error}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    <button
+                        onClick={() => setSyncResults(null)}
+                        style={{
+                            marginTop: '15px',
+                            padding: '8px 16px',
+                            backgroundColor: '#475569',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Dismiss
+                    </button>
+                </div>
+            )}
 
             {/* Add user section */}
             <div className="admin-add-user">
