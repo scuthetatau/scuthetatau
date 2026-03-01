@@ -85,13 +85,15 @@ const UserManagement = () => {
     const [newUser, setNewUser] = useState({
         email: '', firstName: '', lastName: '', class: '',
         graduationYear: '', family: '', major: '', role: '',
-        points: 0, profilePictureUrl: '', bigId: '', linkedinUrl: ''
+        points: 0, profilePictureUrl: '', bigId: '', linkedinUrl: '',
+        dropped: false
     });
 
     const [newAlumni, setNewAlumni] = useState({
-        firstName: '', lastName: '', graduationYear: '', major: '',
-        profilePictureUrl: '', bigId: '', dropped: false,
-        family: '', linkedinUrl: ''
+        email: '', firstName: '', lastName: '', class: '',
+        graduationYear: '', family: '', major: '', role: '',
+        points: 0, profilePictureUrl: '', bigId: '', linkedinUrl: '',
+        dropped: false
     });
 
     // Data fetching
@@ -230,14 +232,18 @@ const UserManagement = () => {
 
         try {
             const alumniData = {
+                email: userData.email || '',
                 firstName: userData.firstName,
                 lastName: userData.lastName,
+                class: userData.class || '',
                 graduationYear: userData.graduationYear,
-                major: userData.major,
-                profilePictureUrl: userData.profilePictureUrl,
-                bigId: userData.bigId,
-                dropped: false,
                 family: userData.family,
+                major: userData.major,
+                role: userData.role || '',
+                points: userData.points || 0,
+                profilePictureUrl: userData.profilePictureUrl,
+                bigId: userData.bigId || '',
+                dropped: false,
                 linkedinUrl: userData.linkedinUrl || ''
             };
 
@@ -267,17 +273,18 @@ const UserManagement = () => {
 
         try {
             const userData = {
-                email: '', // Alumni don't have emails in this schema, so we'll leave it blank or prompt for it.
+                email: alumniData.email || '',
                 firstName: alumniData.firstName,
                 lastName: alumniData.lastName,
-                class: '', // Alumni don't have class in this schema, so we'll leave it blank or prompt for it.
+                class: alumniData.class || '',
                 graduationYear: alumniData.graduationYear,
                 family: alumniData.family,
                 major: alumniData.major,
-                role: '', // Alumni don't have roles, so we'll leave it blank or prompt for it.
-                points: 0, // Alumni don't have points, so we'll set to 0 or prompt for it.
+                role: alumniData.role || '',
+                points: alumniData.points || 0,
                 profilePictureUrl: alumniData.profilePictureUrl,
-                bigId: alumniData.bigId,
+                bigId: alumniData.bigId || '',
+                dropped: alumniData.dropped || false,
                 linkedinUrl: alumniData.linkedinUrl || ''
             };
 
@@ -305,7 +312,8 @@ const UserManagement = () => {
             setNewUser({
                 email: '', firstName: '', lastName: '', class: '',
                 graduationYear: '', family: '', major: '', role: '',
-                points: 0, profilePictureUrl: '', bigId: '', linkedinUrl: ''
+                points: 0, profilePictureUrl: '', bigId: '', linkedinUrl: '',
+                dropped: false
             });
             setProfilePictureEdit(null);
             alert('User added successfully');
@@ -332,9 +340,10 @@ const UserManagement = () => {
         try {
             await addAlumni(newAlumni, alumniProfilePictureEdit);
             setNewAlumni({
-                firstName: '', lastName: '', graduationYear: '', major: '',
-                profilePictureUrl: '', bigId: '', dropped: false,
-                family: '', linkedinUrl: ''
+                email: '', firstName: '', lastName: '', class: '',
+                graduationYear: '', family: '', major: '', role: '',
+                points: 0, profilePictureUrl: '', bigId: '', linkedinUrl: '',
+                dropped: false
             });
             setAlumniProfilePictureEdit(null);
             alert('Alumni added successfully');

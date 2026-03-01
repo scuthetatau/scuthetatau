@@ -9,32 +9,21 @@ This documentation provides an overview of how the Firebase backend is organized
 
 ## Firestore Collections
 
-### `users`
-Stores all currently active members of the fraternity.
-- **Key Fields**:
-    - `email`: User's primary email address (used for auth mapping).
+### `users` & `alumni`
+These collections now share a unified schema to ensure no data is lost when converting members between active and alumni states.
+- **Shared Fields**:
+    - `email`: User's primary email address (preserved in alumni state).
     - `firstName`, `lastName`: Member's full name.
     - `class`: Pledging class (e.g., "Alpha Alpha").
     - `graduationYear`: Year of graduation.
     - `family`: Associated family (e.g., "Filthy Fam", "Clout Fam").
     - `major`: Academic major.
-    - `role`: Current leadership role (e.g., "Regent", "Webmaster").
-    - `points`: Total current points for the member.
+    - `role`: Current or past leadership role.
+    - `points`: Total points earned (preserved in alumni state).
     - `profilePictureUrl`: URL to the member's photo in Firebase Storage.
     - `bigId`: ID of the member's Big Brother (referenced from `users` or `alumni`).
     - `linkedinUrl`: Professional LinkedIn profile link.
-
-### `alumni`
-Stores former members of the fraternity.
-- **Key Fields**:
-    - `firstName`, `lastName`: Member's full name.
-    - `graduationYear`: Year of graduation.
-    - `major`: Academic major.
-    - `profilePictureUrl`: URL to the member's photo in Firebase Storage.
-    - `bigId`: ID of the member's Big Brother (referenced from `users` or `alumni`).
-    - `dropped`: Boolean indicating if the member dropped before graduation.
-    - `family`: Associated family.
-    - `linkedinUrl`: Professional LinkedIn profile link.
+    - `dropped`: Boolean indicating if the member dropped (defaults to `false` for active users).
 
 ### `admins`
 Used to sync user roles for Firestore security rules (keyed by email).
