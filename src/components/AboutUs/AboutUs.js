@@ -149,12 +149,12 @@ const AboutUs = () => {
                         <div className="masonry-item">
                             <img alt="Team Building" src={Retreat2025} />
                         </div>
-                        <div className="masonry-item wide">
-                            <img alt="Networking Event" src={IotaClass} />
-                        </div>
-                        <div className="masonry-item tall">
-                            <img alt="Study Session" src={ThetaClass} />
-                        </div>
+                        {/*<div className="masonry-item wide">*/}
+                        {/*    <img alt="Networking Event" src={IotaClass} />*/}
+                        {/*</div>*/}
+                        {/*<div className="masonry-item tall">*/}
+                        {/*    <img alt="Study Session" src={ThetaClass} />*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             </section>
@@ -165,7 +165,7 @@ const AboutUs = () => {
                     <img
                         alt="National History"
                         className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"
-                        src={UpsilonEpsilonThetaTau}
+                        src={IotaClass}
                     />
                     <div className="absolute inset-0 bg-about-primary/20 mix-blend-multiply"></div>
                 </div>
