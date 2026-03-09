@@ -4,7 +4,7 @@ import CoatArms from '../assets/CoatArms.png';
 import GenericProfile from '../assets/generic.png';
 import './MeetTheBrothers.css';
 import { firestore } from '../../firebase';
-import ChapterPhoto from "../assets/ChapterPhoto.jpeg";
+import ChapterPhoto from "../assets/ChapterSilly2026.JPG";
 import { getProfilePictureUrl } from '../../utils/imageUtils';
 
 const MeetTheBrothers = () => {

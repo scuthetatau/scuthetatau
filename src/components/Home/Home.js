@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import './Home.css';
 import backgroundImage from '../assets/HomePage_Hero.png';
 import regentImage from '../assets/regent.jpeg';
-import ChapterPhoto from '../assets/ChapterPhoto.jpeg';
+import ChapterPhoto from '../assets/ChapterSilly2026.JPG';
 
 const Home = () => {
     useEffect(() => {

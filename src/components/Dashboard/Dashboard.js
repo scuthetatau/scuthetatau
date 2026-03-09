@@ -336,13 +336,17 @@ const SpoonAssassinsCard = ({ userId }) => {
                 setTotalActiveCount(allTargets.length);
 
                 // Fetch round end time from config
-                const configDoc = await getDoc(doc(firestore, 'game_config', 'spoon_assassins'));
-                if (configDoc.exists()) {
-                    const data = configDoc.data();
-                    if (data.roundEndTime) {
-                        // Handle both Timestamp and string formats
-                        setRoundEndTime(data.roundEndTime.toDate ? data.roundEndTime.toDate() : new Date(data.roundEndTime));
+                try {
+                    const configDoc = await getDoc(doc(firestore, 'game_config', 'spoon_assassins'));
+                    if (configDoc.exists()) {
+                        const data = configDoc.data();
+                        if (data.roundEndTime) {
+                            // Handle both Timestamp and string formats
+                            setRoundEndTime(data.roundEndTime.toDate ? data.roundEndTime.toDate() : new Date(data.roundEndTime));
+                        }
                     }
+                } catch (configError) {
+                    console.warn('Could not fetch round timer config:', configError.message);
                 }
             } catch (error) {
                 console.error('Error fetching Spoon Assassins data:', error);
@@ -401,7 +405,7 @@ const SpoonAssassinsCard = ({ userId }) => {
                     ) : (
                         <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                             <p className="text-[10px] uppercase font-bold text-slate-400 mb-1 tracking-widest">Status</p>
-                            <p className="text-2xl font-anton text-slate-400 uppercase italic tracking-tight">NOT DEPLOYED</p>
+                            <p className="text-2xl font-anton text-slate-400 uppercase italic tracking-tight">NO TARGET ASSIGNED</p>
                         </div>
                     )}
 
@@ -582,7 +586,7 @@ const Dashboard = () => {
 
                 <div className="flex flex-col gap-8">
                     {/*ENABLE AND RE ENABLE CARD AS NEEDED*/}
-                    {/*<SpoonAssassinsCard userId={user.id} />*/}
+                    <SpoonAssassinsCard userId={user.id} />
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <PointsCard points={points} userId={user.id} />

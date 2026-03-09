@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import iotaClass from '../assets/IotaClass.JPG';
+import KappaClass from '../assets/KappaClass.JPG';
 import rushInfoNight from '../assets/Rush_Info_Night_2026.JPG';
 import './Rush.css';
 
@@ -72,7 +72,7 @@ const Rush = () => {
                     <img
                         alt="Fraternity Group Hero Background"
                         className="w-full h-full object-cover opacity-60 scale-110"
-                        src={iotaClass}
+                        src={KappaClass}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent"></div>
                 </div>
