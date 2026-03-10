@@ -239,7 +239,7 @@ const UserManagement = () => {
                     <div className="flex items-center space-x-4">
                         <button
                             onClick={() => setIsAddAlumniOpen(true)}
-                            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded font-medium text-sm hover:bg-blue-700 transition-shadow shadow-sm active:scale-95">
+                            className="flex items-center space-x-2 bg-[#FFD700] text-slate-900 px-4 py-2 rounded font-medium text-sm hover:bg-[#E6C200] transition-shadow shadow-sm active:scale-95">
                             <span className="material-symbols-outlined text-sm">workspace_premium</span>
                             <span>Add Alumni</span>
                         </button>
@@ -530,7 +530,7 @@ const AlumniMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
             <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-gray-50 rounded-xl shadow-2xl border border-slate-200">
                 <header className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 text-blue-800">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-yellow-50 text-yellow-800">
                             <span className="material-symbols-outlined">{isEdit ? 'edit' : 'person_add'}</span>
                         </div>
                         <h2 className="text-xl font-bold text-slate-900">{isEdit ? 'Edit Alumni' : 'Add New Alumni'}</h2>
@@ -552,30 +552,30 @@ const AlumniMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
                                 )}
                             </div>
                             <input type="file" className="hidden" onChange={e => setFile(e.target.files[0])} />
-                            <span className="mt-3 text-sm font-semibold text-blue-600 hover:underline">Change Photo</span>
+                            <span className="mt-3 text-sm font-semibold text-yellow-600 hover:underline">Change Photo</span>
                         </label>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">First Name</label><input required className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none" value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} /></div>
-                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Last Name</label><input required className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none" value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} /></div>
+                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">First Name</label><input required className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} /></div>
+                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Last Name</label><input required className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} /></div>
 
-                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Personal Email</label><input type="email" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} /></div>
+                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Personal Email</label><input type="email" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} /></div>
 
-                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Graduation Year</label><input type="number" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none" value={formData.graduationYear} onChange={e => setFormData({ ...formData, graduationYear: e.target.value })} /></div>
+                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Graduation Year</label><input type="number" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.graduationYear} onChange={e => setFormData({ ...formData, graduationYear: e.target.value })} /></div>
 
                         <div className="space-y-1.5 flex flex-col items-start">
                             <label className="text-sm font-semibold text-slate-700">Family</label>
-                            <select className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none" value={formData.family} onChange={e => setFormData({ ...formData, family: e.target.value })}>
+                            <select className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.family} onChange={e => setFormData({ ...formData, family: e.target.value })}>
                                 <option value="">Select Family</option>
                                 {AVAILABLE_FAMILIES.map(fam => <option key={fam} value={fam}>{fam}</option>)}
                             </select>
                         </div>
-                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Major</label><input className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none" value={formData.major} onChange={e => setFormData({ ...formData, major: e.target.value })} /></div>
+                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Major</label><input className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.major} onChange={e => setFormData({ ...formData, major: e.target.value })} /></div>
 
                         <div className="space-y-1.5 flex flex-col items-start">
                             <label className="text-sm font-semibold text-slate-700">Big Brother</label>
-                            <select className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none" value={formData.bigId} onChange={e => setFormData({ ...formData, bigId: e.target.value })}>
+                            <select className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.bigId} onChange={e => setFormData({ ...formData, bigId: e.target.value })}>
                                 <option value="">Select Big</option>
                                 {availableBigs.filter(b => b.id !== formData.id).map(b => (
                                     <option key={b.id} value={b.id}>{b.firstName} {b.lastName}</option>
@@ -584,17 +584,17 @@ const AlumniMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
                         </div>
                         <div className="space-y-1.5 flex flex-col items-start">
                             <label className="text-sm font-semibold text-slate-700">Pledge Class</label>
-                            <select className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none" value={formData.class} onChange={e => setFormData({ ...formData, class: e.target.value })}>
+                            <select className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.class} onChange={e => setFormData({ ...formData, class: e.target.value })}>
                                 <option value="">Select Class</option>
                                 {PLEDGE_CLASSES.map(cls => <option key={cls} value={cls}>{cls}</option>)}
                             </select>
                         </div>
 
-                        <div className="md:col-span-2 space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">LinkedIn Profile URL</label><input type="text" placeholder="https://www.linkedin.com/in/..." className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none" value={formData.linkedinUrl} onChange={e => setFormData({ ...formData, linkedinUrl: e.target.value })} /></div>
+                        <div className="md:col-span-2 space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">LinkedIn Profile URL</label><input type="text" placeholder="https://www.linkedin.com/in/..." className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.linkedinUrl} onChange={e => setFormData({ ...formData, linkedinUrl: e.target.value })} /></div>
                         <div className="space-y-1.5 flex flex-col flex-1 items-start md:col-span-2">
                             <label className="text-sm font-semibold text-slate-700">Status</label>
                             <label className="flex items-center space-x-2 mt-2">
-                                <input type="checkbox" className="rounded text-blue-600" checked={formData.dropped} onChange={e => setFormData({ ...formData, dropped: e.target.checked })} />
+                                <input type="checkbox" className="rounded text-[#FFD700]" checked={formData.dropped} onChange={e => setFormData({ ...formData, dropped: e.target.checked })} />
                                 <span className="text-sm text-slate-700">Dropped</span>
                             </label>
                         </div>
@@ -606,7 +606,7 @@ const AlumniMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
                         ) : <div></div>}
                         <div className="flex gap-3">
                             <button type="button" onClick={onClose} className="px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">Cancel</button>
-                            <button type="submit" className="px-8 py-2.5 rounded-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all flex items-center gap-2">
+                            <button type="submit" className="px-8 py-2.5 rounded-lg text-sm font-bold text-slate-900 bg-[#FFD700] hover:bg-[#E6C200] shadow-lg transition-all flex items-center gap-2">
                                 {isEdit ? 'Save Changes' : 'Add Alumni'}
                             </button>
                         </div>
