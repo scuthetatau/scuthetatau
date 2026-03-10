@@ -100,8 +100,8 @@ const UserManagement = () => {
     // Combiner for table
     const allMembers = useMemo(() => {
         const combined = [
-            ...users.map(u => ({ ...u, type: u.dropped ? 'Dropped' : 'Active' })),
-            ...alumni.map(a => ({ ...a, type: a.dropped ? 'Dropped' : 'Alumni' }))
+            ...users.map(u => ({ ...u, type: u.dropped ? 'Dropped' : 'Active', originalType: 'Active' })),
+            ...alumni.map(a => ({ ...a, type: a.dropped ? 'Dropped' : 'Alumni', originalType: 'Alumni' }))
         ];
 
         return combined.filter(member => {
@@ -136,6 +136,9 @@ const UserManagement = () => {
         const profilePictureUrl = await uploadProfilePicture(profilePicture);
         if (profilePictureUrl) userData.profilePictureUrl = profilePictureUrl;
 
+        delete userData.type;
+        delete userData.originalType;
+
         let userId = forcedId;
         if (forcedId) {
             await setDoc(doc(firestore, 'users', forcedId), userData);
@@ -148,7 +151,9 @@ const UserManagement = () => {
         }
 
         if (ADMIN_ROLES.includes(userData.role)) {
-            await setDoc(doc(firestore, 'admins', userData.email), { role: userData.role, userId: userId });
+            if (userData.email) {
+                await setDoc(doc(firestore, 'admins', userData.email), { role: userData.role, userId: userId });
+            }
         } else if (userData.id && userData.email) {
             try { await deleteDoc(doc(firestore, 'admins', userData.email)); } catch (err) { }
         }
@@ -167,6 +172,9 @@ const UserManagement = () => {
 
         const profilePictureUrl = await uploadProfilePicture(profilePicture);
         if (profilePictureUrl) alumniData.profilePictureUrl = profilePictureUrl;
+
+        delete alumniData.type;
+        delete alumniData.originalType;
 
         if (forcedId) {
             await setDoc(doc(firestore, 'alumni', forcedId), alumniData);
@@ -191,6 +199,9 @@ const UserManagement = () => {
             delete alumniData.type;
             await handleSaveAlumni(alumniData, null, userData.id);
             await deleteDoc(doc(firestore, 'users', userData.id));
+            if (userData.email) {
+                try { await deleteDoc(doc(firestore, 'admins', userData.email)); } catch (err) { }
+            }
             setUsers(await fetchUsers());
             setEditingUser(null);
         } catch (error) {
@@ -363,7 +374,7 @@ const UserManagement = () => {
                                             <td className="px-6 py-4 text-sm text-gray-600">{member.major}</td>
                                             <td className="px-6 py-4 text-right space-x-2">
                                                 <button
-                                                    onClick={() => member.type === 'Alumni' ? setEditingAlumni(member) : setEditingUser(member)}
+                                                    onClick={() => member.originalType === 'Alumni' ? setEditingAlumni(member) : setEditingUser(member)}
                                                     className="p-1 text-gray-400 hover:text-primary-burgundy transition-colors"
                                                 >
                                                     <span className="material-symbols-outlined text-lg">edit</span>
@@ -449,7 +460,7 @@ const ActiveMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">First Name</label><input required className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-800 outline-none" value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} /></div>
                         <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Last Name</label><input required className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-800 outline-none" value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} /></div>
-                        <div className="md:col-span-2 space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">SCU Email</label><input required type="email" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-800 outline-none" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} /></div>
+                        <div className="md:col-span-2 space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">SCU Email</label><input type="email" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-800 outline-none" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} /></div>
 
                         <div className="space-y-1.5 flex flex-col items-start">
                             <label className="text-sm font-semibold text-slate-700">Class Name</label>
