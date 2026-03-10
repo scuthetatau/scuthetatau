@@ -121,14 +121,14 @@ const FamilyTree = () => {
             <g className={`node ${isAlumni ? 'alumni' : ''}`}>
                 <circle r={30} fill={isAlumni ? '#252525' : '#881616'} />
                 <circle r={25} fill="none" stroke={isAlumni ? '#252525' : '#881616'} strokeWidth="2" />
-                <image
-                    href={profilePicture}
-                    x="-25"
-                    y="-25"
-                    width="50"
-                    height="50"
-                    className="profile-image"
-                />
+                <foreignObject x="-25" y="-25" width="50" height="50">
+                    <img
+                        src={profilePicture}
+                        alt="profile"
+                        style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }}
+                        loading="lazy"
+                    />
+                </foreignObject>
                 <rect
                     x="-50"
                     y="31"
@@ -172,7 +172,7 @@ const FamilyTree = () => {
         <div className="family-tree-container">
             <h2>FAMILY TREE</h2>
             {treeData && (
-                <div style={{ width: '100%', height: '638px' }}>
+                <div style={{ width: '100%', height: 'calc(100vh - 180px)' }}>
                     <Tree
                         data={treeData}
                         orientation="vertical"
