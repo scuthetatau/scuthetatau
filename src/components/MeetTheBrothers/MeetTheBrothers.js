@@ -18,7 +18,9 @@ const MeetTheBrothers = () => {
                 const usersCollection = collection(firestore, 'users');
                 const usersQuery = query(usersCollection, orderBy('lastName'));
                 const usersSnapshot = await getDocs(usersQuery);
-                const usersList = usersSnapshot.docs.map(doc => doc.data());
+                const usersList = usersSnapshot.docs
+                    .map(doc => doc.data())
+                    .filter(user => !user.dropped);
 
                 const usersWithImages = await Promise.all(usersList.map(async user => {
                     user.profilePicUrl = await getProfilePictureUrl(user.profilePictureUrl, null);
