@@ -586,7 +586,7 @@ const Dashboard = () => {
 
                 <div className="flex flex-col gap-8">
                     {/*ENABLE AND RE ENABLE CARD AS NEEDED*/}
-                    <SpoonAssassinsCard userId={user.id} />
+                    {/*<SpoonAssassinsCard userId={user.id} />*/}
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <PointsCard points={points} userId={user.id} />
