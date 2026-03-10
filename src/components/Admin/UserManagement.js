@@ -100,8 +100,8 @@ const UserManagement = () => {
     // Combiner for table
     const allMembers = useMemo(() => {
         const combined = [
-            ...users.map(u => ({ ...u, type: u.dropped ? 'LOA' : 'Active' })),
-            ...alumni.map(a => ({ ...a, type: 'Alumni' }))
+            ...users.map(u => ({ ...u, type: u.dropped ? 'Dropped' : 'Active' })),
+            ...alumni.map(a => ({ ...a, type: a.dropped ? 'Dropped' : 'Alumni' }))
         ];
 
         return combined.filter(member => {
@@ -186,7 +186,7 @@ const UserManagement = () => {
         const confirmed = window.confirm(`Are you sure you want to convert ${userData.firstName} ${userData.lastName} to alumni?`);
         if (!confirmed) return;
         try {
-            const alumniData = { ...userData, dropped: false };
+            const alumniData = { ...userData };
             delete alumniData.id;
             delete alumniData.type;
             await handleSaveAlumni(alumniData, null, userData.id);
@@ -203,7 +203,7 @@ const UserManagement = () => {
         const confirmed = window.confirm(`Are you sure you want to convert ${alumniData.firstName} ${alumniData.lastName} back to an active user?`);
         if (!confirmed) return;
         try {
-            const userData = { ...alumniData, dropped: false };
+            const userData = { ...alumniData };
             delete userData.id;
             delete userData.type;
             await handleSaveActive(userData, null, alumniData.id);
@@ -315,7 +315,7 @@ const UserManagement = () => {
                                     <option>All Statuses</option>
                                     <option>Active</option>
                                     <option>Alumni</option>
-                                    <option>LOA</option>
+                                    <option>Dropped</option>
                                 </select>
                                 <select value={majorFilter} onChange={e => setMajorFilter(e.target.value)} className="text-sm border-gray-300 rounded focus:ring-primary-burgundy focus:border-primary-burgundy">
                                     {uniqueMajors.map(major => (
@@ -357,7 +357,7 @@ const UserManagement = () => {
                                             <td className="px-6 py-4">
                                                 {member.type === 'Active' && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>}
                                                 {member.type === 'Alumni' && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Alumni</span>}
-                                                {member.type === 'LOA' && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">LOA</span>}
+                                                {member.type === 'Dropped' && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Dropped</span>}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-600 font-medium">{member.graduationYear}</td>
                                             <td className="px-6 py-4 text-sm text-gray-600">{member.major}</td>
@@ -491,7 +491,7 @@ const ActiveMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
                             <label className="text-sm font-semibold text-slate-700">Status</label>
                             <label className="flex items-center space-x-2 mt-2">
                                 <input type="checkbox" className="rounded text-red-800" checked={formData.dropped} onChange={e => setFormData({ ...formData, dropped: e.target.checked })} />
-                                <span className="text-sm text-slate-700">Dropped (LOA)</span>
+                                <span className="text-sm text-slate-700">Dropped</span>
                             </label>
                         </div>
 
@@ -595,7 +595,7 @@ const AlumniMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
                             <label className="text-sm font-semibold text-slate-700">Status</label>
                             <label className="flex items-center space-x-2 mt-2">
                                 <input type="checkbox" className="rounded text-blue-600" checked={formData.dropped} onChange={e => setFormData({ ...formData, dropped: e.target.checked })} />
-                                <span className="text-sm text-slate-700">Dropped (LOA)</span>
+                                <span className="text-sm text-slate-700">Dropped</span>
                             </label>
                         </div>
                     </div>
