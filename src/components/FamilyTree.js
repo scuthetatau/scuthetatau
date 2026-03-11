@@ -75,7 +75,8 @@ const FamilyTree = () => {
                 name: `${member.firstName} ${member.lastName}`,
                 attributes: {
                     class: member.class || member.graduationYear || 'Unknown',
-                    isAlumni: member.isAlumni
+                    isAlumni: member.isAlumni,
+                    isDropped: member.dropped || false
                 },
                 profilePicture: member.profilePictureUrl || genericProfile
             };
@@ -114,7 +115,7 @@ const FamilyTree = () => {
         const className = nodeDatum?.attributes?.class || 'Unknown';
         const profilePicture = nodeDatum?.profilePicture || genericProfile;
         const name = nodeDatum?.name || 'Unknown';
-        const isAlumni = nodeDatum?.attributes?.isAlumni;
+        const isAlumni = nodeDatum?.attributes?.isAlumni || nodeDatum?.attributes?.isDropped;
         const isFamily = nodeDatum?.attributes?.isFamily;
 
         return (
