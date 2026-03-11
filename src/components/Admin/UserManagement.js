@@ -35,6 +35,17 @@ const validateLinkedInUrl = (url) => {
 
 const uploadProfilePicture = async (file) => {
     if (!file) return null;
+
+    // Validate file size (< 10MB) and type
+    if (file.size > 10 * 1024 * 1024) {
+        alert("Image must be smaller than 5MB.");
+        throw new Error("Image too large");
+    }
+    if (!file.type.startsWith('image/')) {
+        alert("File must be an image.");
+        throw new Error("Invalid file type");
+    }
+
     const path = `profilePictures/${new Date().getTime()}_${file.name}`;
     const fileRef = ref(storage, path);
     await uploadBytes(fileRef, file);
@@ -227,6 +238,44 @@ const UserManagement = () => {
         }
     };
 
+    const handleExportActiveUsersCSV = () => {
+        // Only get active members (users who are not dropped)
+        const activeUsers = users.filter(u => !u.dropped);
+
+        // CSV Headers
+        const headers = ['First Name', 'Last Name', 'Email', 'Class', 'Major', 'Graduation Year', 'Role', 'Points', 'LinkedIn URL'];
+
+        // Map data to rows
+        const rows = activeUsers.map(user => [
+            user.firstName || '',
+            user.lastName || '',
+            user.email || '',
+            user.class || '',
+            user.major || '',
+            user.graduationYear || '',
+            user.role || '',
+            user.points || 0,
+            user.linkedinUrl || ''
+        ]);
+
+        // Build CSV string
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))
+        ].join('\n');
+
+        // Trigger download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `active_users_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="flex h-screen overflow-hidden bg-page-bg font-sans text-charcoal antialiased">
             <main className="flex flex-col overflow-hidden w-full">
@@ -248,6 +297,12 @@ const UserManagement = () => {
                         </div>
                     </div>
                     <div className="flex items-center space-x-4">
+                        <button
+                            onClick={handleExportActiveUsersCSV}
+                            className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded font-medium text-sm hover:bg-green-700 transition-shadow shadow-sm active:scale-95">
+                            <span className="material-symbols-outlined text-sm">download</span>
+                            <span>Export Actives (CSV)</span>
+                        </button>
                         <button
                             onClick={() => setIsAddAlumniOpen(true)}
                             className="flex items-center space-x-2 bg-[#FFD700] text-slate-900 px-4 py-2 rounded font-medium text-sm hover:bg-[#E6C200] transition-shadow shadow-sm active:scale-95">
@@ -497,7 +552,7 @@ const ActiveMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
                             </select>
                         </div>
 
-                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Prof. Points</label><input type="number" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-800 outline-none" value={formData.points} onChange={e => setFormData({ ...formData, points: parseInt(e.target.value) || 0 })} /></div>
+                        <div className="space-y-1.5 flex flex-col items-start"><label className="text-sm font-semibold text-slate-700">Points</label><input type="number" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-800 outline-none" value={formData.points} onChange={e => setFormData({ ...formData, points: parseInt(e.target.value) || 0 })} /></div>
                         <div className="space-y-1.5 flex flex-col flex-1 items-start">
                             <label className="text-sm font-semibold text-slate-700">Status</label>
                             <label className="flex items-center space-x-2 mt-2">
