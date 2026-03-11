@@ -3,8 +3,8 @@ import { firestore } from '../../firebase';
 import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { checkUserRole } from './auth';
-import { onAuthStateChanged } from 'firebase/auth'; // [NEW] Import
-import { auth } from '../../firebase'; // [NEW] Import
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../firebase';
 
 const SpoonAssassins = () => {
     // Game Data State
