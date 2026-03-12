@@ -19,7 +19,7 @@ const AVAILABLE_FAMILIES = [
 ];
 
 const PLEDGE_CLASSES = [
-    "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta", "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"
+    "Founding Class", "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta", "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"
 ];
 
 const ADMIN_ROLES = [
@@ -397,6 +397,7 @@ const UserManagement = () => {
                                     <tr className="bg-gray-50 border-b border-border-light">
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Name</th>
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Class</th>
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Grad Year</th>
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Major</th>
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
@@ -425,8 +426,9 @@ const UserManagement = () => {
                                                 {member.type === 'Alumni' && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Alumni</span>}
                                                 {member.type === 'Dropped' && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Dropped</span>}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-600 font-medium">{member.graduationYear}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">{member.major}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-medium">{member.class || 'N/A'}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-medium">{member.graduationYear || 'N/A'}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600">{member.major || 'N/A'}</td>
                                             <td className="px-6 py-4 text-right space-x-2">
                                                 <button
                                                     onClick={() => member.originalType === 'Alumni' ? setEditingAlumni(member) : setEditingUser(member)}
@@ -546,8 +548,15 @@ const ActiveMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
                             <label className="text-sm font-semibold text-slate-700">Big Brother</label>
                             <select className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-800 outline-none" value={formData.bigId} onChange={e => setFormData({ ...formData, bigId: e.target.value })}>
                                 <option value="">Select Big</option>
-                                {availableBigs.filter(b => b.id !== formData.id).map(b => (
-                                    <option key={b.id} value={b.id}>{b.firstName} {b.lastName}</option>
+                                {availableBigs
+                                    .filter(b => b.id !== formData.id)
+                                    .sort((a, b) => {
+                                        const nameA = `${a.firstName || ''} ${a.lastName || ''}`.toLowerCase();
+                                        const nameB = `${b.firstName || ''} ${b.lastName || ''}`.toLowerCase();
+                                        return nameA.localeCompare(nameB);
+                                    })
+                                    .map(b => (
+                                        <option key={b.id} value={b.id}>{b.firstName} {b.lastName}</option>
                                 ))}
                             </select>
                         </div>
@@ -643,8 +652,15 @@ const AlumniMemberModal = ({ isOpen, initialData, onClose, onSave, availableBigs
                             <label className="text-sm font-semibold text-slate-700">Big Brother</label>
                             <select className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#FFD700] outline-none" value={formData.bigId} onChange={e => setFormData({ ...formData, bigId: e.target.value })}>
                                 <option value="">Select Big</option>
-                                {availableBigs.filter(b => b.id !== formData.id).map(b => (
-                                    <option key={b.id} value={b.id}>{b.firstName} {b.lastName}</option>
+                                {availableBigs
+                                    .filter(b => b.id !== formData.id)
+                                    .sort((a, b) => {
+                                        const nameA = `${a.firstName || ''} ${a.lastName || ''}`.toLowerCase();
+                                        const nameB = `${b.firstName || ''} ${b.lastName || ''}`.toLowerCase();
+                                        return nameA.localeCompare(nameB);
+                                    })
+                                    .map(b => (
+                                        <option key={b.id} value={b.id}>{b.firstName} {b.lastName}</option>
                                 ))}
                             </select>
                         </div>
