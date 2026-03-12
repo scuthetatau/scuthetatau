@@ -70,6 +70,11 @@ const UserManagement = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('All Statuses');
     const [majorFilter, setMajorFilter] = useState('All Majors');
+    const [classFilter, setClassFilter] = useState('All Classes');
+    const [gradYearFilter, setGradYearFilter] = useState('All Grad Years');
+
+    // Sorting State
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
     // Data fetching
     const fetchUsers = async () => {
@@ -123,16 +128,67 @@ const UserManagement = () => {
 
             const matchStatus = statusFilter === 'All Statuses' || member.type === statusFilter;
             const matchMajor = majorFilter === 'All Majors' || member.major === majorFilter;
+            const matchClass = classFilter === 'All Classes' || member.class === classFilter;
+            const matchGradYear = gradYearFilter === 'All Grad Years' || String(member.graduationYear) === String(gradYearFilter);
 
-            return matchSearch && matchStatus && matchMajor;
+            return matchSearch && matchStatus && matchMajor && matchClass && matchGradYear;
         });
-    }, [users, alumni, searchQuery, statusFilter, majorFilter]);
+    }, [users, alumni, searchQuery, statusFilter, majorFilter, classFilter, gradYearFilter]);
 
     // Derived unique majors for filter
     const uniqueMajors = useMemo(() => {
         const majors = new Set([...users, ...alumni].map(m => m.major).filter(Boolean));
         return ['All Majors', ...Array.from(majors).sort()];
     }, [users, alumni]);
+
+    const uniqueClasses = useMemo(() => {
+        const classes = new Set([...users, ...alumni].map(m => m.class).filter(Boolean));
+        const sortedClasses = Array.from(classes).sort((a, b) => {
+            const idxA = PLEDGE_CLASSES.indexOf(a);
+            const idxB = PLEDGE_CLASSES.indexOf(b);
+            if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+            if (idxA === -1) return 1;
+            if (idxB === -1) return -1;
+            return idxA - idxB;
+        });
+        return ['All Classes', ...sortedClasses];
+    }, [users, alumni]);
+
+    const uniqueGradYears = useMemo(() => {
+        const years = new Set([...users, ...alumni].map(m => m.graduationYear).filter(Boolean));
+        return ['All Grad Years', ...Array.from(years).sort()];
+    }, [users, alumni]);
+
+    const handleSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const sortedMembers = useMemo(() => {
+        if (!sortConfig.key) return allMembers;
+        return [...allMembers].sort((a, b) => {
+            let aVal = a[sortConfig.key] || '';
+            let bVal = b[sortConfig.key] || '';
+
+            if (sortConfig.key === 'class') {
+                aVal = PLEDGE_CLASSES.indexOf(aVal) !== -1 ? PLEDGE_CLASSES.indexOf(aVal) : 999;
+                bVal = PLEDGE_CLASSES.indexOf(bVal) !== -1 ? PLEDGE_CLASSES.indexOf(bVal) : 999;
+            } else if (sortConfig.key === 'graduationYear') {
+                aVal = parseInt(aVal) || 0;
+                bVal = parseInt(bVal) || 0;
+            } else if (sortConfig.key === 'name') {
+                aVal = `${a.firstName} ${a.lastName}`.toLowerCase();
+                bVal = `${b.firstName} ${b.lastName}`.toLowerCase();
+            }
+
+            if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    }, [allMembers, sortConfig]);
 
     const activeCount = users.filter(u => !u.dropped).length;
     const alumniCount = alumni.length;
@@ -375,13 +431,23 @@ const UserManagement = () => {
                     {/* Table Section */}
                     <section className="bg-white rounded shadow-sm border border-border-light overflow-hidden">
                         <div className="px-6 py-4 border-b border-border-light flex flex-wrap items-center justify-between gap-4">
-                            <div className="flex items-center space-x-2">
+                            <div className="flex flex-wrap items-center gap-2">
                                 <span className="text-sm font-medium text-gray-700">Filter by:</span>
                                 <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="text-sm border-gray-300 rounded focus:ring-primary-burgundy focus:border-primary-burgundy">
                                     <option>All Statuses</option>
                                     <option>Active</option>
                                     <option>Alumni</option>
                                     <option>Dropped</option>
+                                </select>
+                                <select value={classFilter} onChange={e => setClassFilter(e.target.value)} className="text-sm border-gray-300 rounded focus:ring-primary-burgundy focus:border-primary-burgundy">
+                                    {uniqueClasses.map(cls => (
+                                        <option key={cls} value={cls}>{cls}</option>
+                                    ))}
+                                </select>
+                                <select value={gradYearFilter} onChange={e => setGradYearFilter(e.target.value)} className="text-sm border-gray-300 rounded focus:ring-primary-burgundy focus:border-primary-burgundy">
+                                    {uniqueGradYears.map(year => (
+                                        <option key={year} value={year}>{year}</option>
+                                    ))}
                                 </select>
                                 <select value={majorFilter} onChange={e => setMajorFilter(e.target.value)} className="text-sm border-gray-300 rounded focus:ring-primary-burgundy focus:border-primary-burgundy">
                                     {uniqueMajors.map(major => (
@@ -395,16 +461,26 @@ const UserManagement = () => {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-border-light">
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Name</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Class</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Grad Year</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Major</th>
+                                        <th onClick={() => handleSort('name')} className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer group hover:bg-gray-100 transition-colors">
+                                            <div className="flex items-center">Name {sortConfig.key === 'name' ? <span className="material-symbols-outlined text-[14px] ml-1">{sortConfig.direction === 'asc' ? 'arrow_upward' : 'arrow_downward'}</span> : <span className="material-symbols-outlined text-[14px] ml-1 opacity-0 group-hover:opacity-50 transition-opacity">sort</span>}</div>
+                                        </th>
+                                        <th onClick={() => handleSort('type')} className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer group hover:bg-gray-100 transition-colors">
+                                            <div className="flex items-center">Status {sortConfig.key === 'type' ? <span className="material-symbols-outlined text-[14px] ml-1">{sortConfig.direction === 'asc' ? 'arrow_upward' : 'arrow_downward'}</span> : <span className="material-symbols-outlined text-[14px] ml-1 opacity-0 group-hover:opacity-50 transition-opacity">sort</span>}</div>
+                                        </th>
+                                        <th onClick={() => handleSort('class')} className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer group hover:bg-gray-100 transition-colors">
+                                            <div className="flex items-center">Class {sortConfig.key === 'class' ? <span className="material-symbols-outlined text-[14px] ml-1">{sortConfig.direction === 'asc' ? 'arrow_upward' : 'arrow_downward'}</span> : <span className="material-symbols-outlined text-[14px] ml-1 opacity-0 group-hover:opacity-50 transition-opacity">sort</span>}</div>
+                                        </th>
+                                        <th onClick={() => handleSort('graduationYear')} className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer group hover:bg-gray-100 transition-colors">
+                                            <div className="flex items-center">Grad Year {sortConfig.key === 'graduationYear' ? <span className="material-symbols-outlined text-[14px] ml-1">{sortConfig.direction === 'asc' ? 'arrow_upward' : 'arrow_downward'}</span> : <span className="material-symbols-outlined text-[14px] ml-1 opacity-0 group-hover:opacity-50 transition-opacity">sort</span>}</div>
+                                        </th>
+                                        <th onClick={() => handleSort('major')} className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer group hover:bg-gray-100 transition-colors">
+                                            <div className="flex items-center">Major {sortConfig.key === 'major' ? <span className="material-symbols-outlined text-[14px] ml-1">{sortConfig.direction === 'asc' ? 'arrow_upward' : 'arrow_downward'}</span> : <span className="material-symbols-outlined text-[14px] ml-1 opacity-0 group-hover:opacity-50 transition-opacity">sort</span>}</div>
+                                        </th>
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border-light">
-                                    {allMembers.map(member => (
+                                    {sortedMembers.map(member => (
                                         <tr key={member.id} className="hover:bg-gray-50/50 transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center">
