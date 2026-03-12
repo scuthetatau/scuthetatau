@@ -76,7 +76,8 @@ const FamilyTree = () => {
                 attributes: {
                     class: member.class || member.graduationYear || 'Unknown',
                     isAlumni: member.isAlumni,
-                    isDropped: member.dropped || false
+                    isDropped: member.dropped || false,
+                    linkedinUrl: member.linkedinUrl || ''
                 },
                 profilePicture: member.profilePictureUrl || genericProfile
             };
@@ -105,6 +106,9 @@ const FamilyTree = () => {
 
         const tree = {
             name: 'Theta Tau Family Tree',
+            attributes: {
+                isFamily: true
+            },
             children: familyNodes
         };
 
@@ -118,9 +122,20 @@ const FamilyTree = () => {
         const isDropped = nodeDatum?.attributes?.isDropped;
         const isAlumni = nodeDatum?.attributes?.isAlumni || isDropped;
         const isFamily = nodeDatum?.attributes?.isFamily;
+        const linkedinUrl = nodeDatum?.attributes?.linkedinUrl;
+
+        const handleClick = () => {
+            if (linkedinUrl) {
+                window.open(linkedinUrl, '_blank', 'noopener,noreferrer');
+            }
+        };
 
         return (
-            <g className={`node ${isAlumni ? 'alumni' : ''}`}>
+            <g 
+                className={`node ${isAlumni ? 'alumni' : ''}`}
+                onClick={handleClick}
+                style={{ cursor: linkedinUrl ? 'pointer' : 'default' }}
+            >
                 <circle r={30} fill={isAlumni ? '#252525' : '#881616'} />
                 <circle r={25} fill="none" stroke={isAlumni ? '#252525' : '#881616'} strokeWidth="2" />
                 <foreignObject x="-25" y="-25" width="50" height="50">
