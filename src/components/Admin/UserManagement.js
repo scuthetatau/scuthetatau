@@ -381,7 +381,7 @@ const UserManagement = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Members</p>
-                                    <h3 className="text-3xl font-bold mt-1">{users.length + alumni.length}</h3>
+                                    <h3 className="text-3xl font-bold mt-1">{activeCount + alumniCount}</h3>
                                 </div>
                                 <div className="p-3 bg-red-50 text-primary-burgundy rounded">
                                     <span className="material-symbols-outlined">groups</span>
