@@ -294,24 +294,26 @@ const UserManagement = () => {
         }
     };
 
-    const handleExportActiveUsersCSV = () => {
-        // Only get active members (users who are not dropped)
-        const activeUsers = users.filter(u => !u.dropped);
+    const handleExportCSV = () => {
+        const combined = [
+            ...users.map(u => ({ ...u, type: u.dropped ? 'Dropped' : 'Active' })),
+            ...alumni.map(a => ({ ...a, type: a.dropped ? 'Dropped' : 'Alumni' }))
+        ];
 
         // CSV Headers
-        const headers = ['First Name', 'Last Name', 'Email', 'Class', 'Major', 'Graduation Year', 'Role', 'Points', 'LinkedIn URL'];
+        const headers = ['First Name', 'Last Name', 'Email', 'Status', 'Class', 'Major', 'Graduation Year', 'Role', 'LinkedIn URL'];
 
         // Map data to rows
-        const rows = activeUsers.map(user => [
-            user.firstName || '',
-            user.lastName || '',
-            user.email || '',
-            user.class || '',
-            user.major || '',
-            user.graduationYear || '',
-            user.role || '',
-            user.points || 0,
-            user.linkedinUrl || ''
+        const rows = combined.map(member => [
+            member.firstName || '',
+            member.lastName || '',
+            member.email || '',
+            member.type || '',
+            member.class || '',
+            member.major || '',
+            member.graduationYear || '',
+            member.role || '',
+            member.linkedinUrl || ''
         ]);
 
         // Build CSV string
@@ -325,7 +327,7 @@ const UserManagement = () => {
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', `active_users_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute('download', `all_members_${new Date().toISOString().split('T')[0]}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -354,10 +356,10 @@ const UserManagement = () => {
                     </div>
                     <div className="flex items-center space-x-4">
                         <button
-                            onClick={handleExportActiveUsersCSV}
+                            onClick={handleExportCSV}
                             className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded font-medium text-sm hover:bg-green-700 transition-shadow shadow-sm active:scale-95">
                             <span className="material-symbols-outlined text-sm">download</span>
-                            <span>Export Actives (CSV)</span>
+                            <span>Export All (CSV)</span>
                         </button>
                         <button
                             onClick={() => setIsAddAlumniOpen(true)}
