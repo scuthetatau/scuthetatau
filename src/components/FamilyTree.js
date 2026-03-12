@@ -13,6 +13,14 @@ const FamilyTree = () => {
     const [treeData, setTreeData] = useState(null);
     const navigate = useNavigate();
 
+    const foundersIDs = new Set([
+        'K26DTygVlTGCbSOtYqnh',
+        'KB6BbO0Tt7b7S0CPHoZr',
+        '8UQWflUNYPJMUM6U9WDQ',
+        'haV85nz8xqC8eXCnkYNr',
+        'YvJ286qtey5i2QdA3lRo'
+    ]);
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (!user) {
@@ -74,6 +82,7 @@ const FamilyTree = () => {
             const node = {
                 name: `${member.firstName} ${member.lastName}`,
                 attributes: {
+                    id: member.id,
                     class: member.class || member.graduationYear || 'Unknown',
                     isAlumni: member.isAlumni,
                     isDropped: member.dropped || false,
@@ -123,6 +132,9 @@ const FamilyTree = () => {
         const isAlumni = nodeDatum?.attributes?.isAlumni || isDropped;
         const isFamily = nodeDatum?.attributes?.isFamily;
         const linkedinUrl = nodeDatum?.attributes?.linkedinUrl;
+        const id = nodeDatum?.attributes?.id;
+        
+        const isFounder = foundersIDs.has(id);
 
         const handleClick = () => {
             if (linkedinUrl) {
@@ -132,12 +144,12 @@ const FamilyTree = () => {
 
         return (
             <g 
-                className={`node ${isAlumni ? 'alumni' : ''}`}
+                className={`node ${isAlumni ? 'alumni' : ''} ${isFounder ? 'founder' : ''}`}
                 onClick={handleClick}
                 style={{ cursor: linkedinUrl ? 'pointer' : 'default' }}
             >
-                <circle r={30} fill={isAlumni ? '#252525' : '#881616'} />
-                <circle r={25} fill="none" stroke={isAlumni ? '#252525' : '#881616'} strokeWidth="2" />
+                <circle className="node-bg" r={30} />
+                <circle className="node-border" r={25} />
                 <foreignObject x="-25" y="-25" width="50" height="50">
                     <img
                         src={profilePicture}

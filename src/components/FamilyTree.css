@@ -36,13 +36,31 @@
 .node {
     cursor: pointer;
 }
-
-.node circle {
+.node circle.node-bg {
     fill: #881616;
 }
 
-.node.alumni circle {
+.node circle.node-border {
+    fill: none;
+    stroke: #881616;
+    stroke-width: 2;
+}
+
+.node.alumni circle.node-bg {
     fill: #252525;
+}
+
+.node.alumni circle.node-border {
+    stroke: #252525;
+}
+
+.node.founder circle.node-bg {
+    fill: #ffc400;
+}
+
+.node.founder circle.node-border {
+    stroke: #ffc400;
+    stroke-width: 4;
 }
 
 .node .profile-image {
@@ -65,13 +83,18 @@
 }
 
 /* Hover effects */
-.node:hover circle {
+.node:hover circle.node-bg {
     fill: #6b1212;
     transition: fill 0.2s ease;
 }
 
-.node.alumni:hover circle {
+.node.alumni:hover circle.node-bg {
     fill: #404040;
+    transition: fill 0.2s ease;
+}
+
+.node.founder:hover circle.node-bg {
+    fill: #ffc400;
     transition: fill 0.2s ease;
 }
 
