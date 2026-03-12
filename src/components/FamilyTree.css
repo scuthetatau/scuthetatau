@@ -13,19 +13,6 @@
     font-family: 'Mohave', sans-serif;
 }
 
-/* Custom node styling */
-.node__root>circle {
-    fill: #2c5282;
-}
-
-.node__branch>circle {
-    fill: #4299e1;
-}
-
-.node__leaf>circle {
-    fill: #48bb78;
-}
-
 /* Link styling */
 .rd3t-link {
     stroke: #881616;
@@ -36,8 +23,10 @@
 .node {
     cursor: pointer;
 }
+
 .node circle.node-bg {
     fill: #881616;
+    stroke: none;
 }
 
 .node circle.node-border {
