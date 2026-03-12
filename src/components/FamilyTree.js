@@ -115,7 +115,8 @@ const FamilyTree = () => {
         const className = nodeDatum?.attributes?.class || 'Unknown';
         const profilePicture = nodeDatum?.profilePicture || genericProfile;
         const name = nodeDatum?.name || 'Unknown';
-        const isAlumni = nodeDatum?.attributes?.isAlumni || nodeDatum?.attributes?.isDropped;
+        const isDropped = nodeDatum?.attributes?.isDropped;
+        const isAlumni = nodeDatum?.attributes?.isAlumni || isDropped;
         const isFamily = nodeDatum?.attributes?.isFamily;
 
         return (
@@ -126,7 +127,13 @@ const FamilyTree = () => {
                     <img
                         src={profilePicture}
                         alt="profile"
-                        style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }}
+                        style={{ 
+                            width: '50px', 
+                            height: '50px', 
+                            objectFit: 'cover', 
+                            borderRadius: '50%',
+                            filter: isDropped ? 'grayscale(100%)' : 'none'
+                        }}
                         loading="lazy"
                     />
                 </foreignObject>
