@@ -12,6 +12,7 @@ import UserManagement from './components/Admin/UserManagement';
 import ManageBroDates from './components/Admin/ManageBroDates';
 import SpoonAssassins from './components/Admin/SpoonAssassins';
 import FamilyTree from './components/FamilyTree';
+import Directory from './components/Directory/Directory';
 import './components/Footer.css';
 import Dashboard from "./components/Dashboard/Dashboard";
 import ScribeEditor from "./components/ScribeEditor/ScribeEditor";
@@ -35,6 +36,7 @@ function App() {
                     <Route path="/admin/bro-dates" element={<ManageBroDates />} />
                     <Route path="/admin/spoon-assassins" element={<SpoonAssassins />} />
                     <Route path="/alumni" element={<Alumni />} />
+                    <Route path="/directory" element={<Directory />} />
 
                     <Route path="/dashboard" element={<Dashboard />} />
 

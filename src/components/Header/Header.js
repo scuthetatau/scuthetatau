@@ -222,6 +222,9 @@ const Header = () => {
                             <li className={location.pathname === '/family-tree' ? 'active' : ''}>
                                 <Link to="/family-tree" onClick={toggleMobileMenu}>Family Tree</Link>
                             </li>
+                            <li className={location.pathname === '/directory' ? 'active' : ''}>
+                                <Link to="/directory" onClick={toggleMobileMenu}>Directory</Link>
+                            </li>
                             {renderMobileAdminLinks()}
                             <li>
                                 <Link to="/" onClick={() => {
@@ -253,6 +256,7 @@ const Header = () => {
                             <div className={`dropdown-menu ${dropdownVisible ? 'open' : ''}`}>
                                 <Link to="/dashboard" className="dropdown-item">Dashboard</Link>
                                 <Link to="/family-tree" className="dropdown-item">Family Tree</Link>
+                                <Link to="/directory" className="dropdown-item">Directory</Link>
                                 {renderAdminLinks()}
                                 <span onClick={handleLogout} className="dropdown-item">Logout</span>
                             </div>
