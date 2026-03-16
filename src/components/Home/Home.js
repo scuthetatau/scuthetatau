@@ -166,7 +166,7 @@ const Home = () => {
                 <div className="relative z-10 text-center px-6 reveal">
                     <h2 className="text-white font-anton text-5xl md:text-8xl mb-12 uppercase tracking-tighter">Interested in Joining?</h2>
                     <a className="glassmorphism px-12 py-6 text-white font-bold uppercase tracking-[0.3em] text-xl rounded-sm hover:bg-accent hover:text-black hover:border-accent transition-all duration-500 inline-block" href="/rush">
-                        Join Rush Winter 2026
+                        Join Rush Winter 2027
                     </a>
                 </div>
             </section>
