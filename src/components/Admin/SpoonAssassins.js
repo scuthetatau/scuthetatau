@@ -462,12 +462,17 @@ const SpoonAssassins = () => {
                                     <tbody className="divide-y divide-border-light">
                                         {filteredChain.map((assignment) => {
                                             const isEliminated = eliminatedUsers.includes(assignment.userId);
+                                            const user = getUserById(assignment.userId);
                                             return (
                                                 <tr key={assignment.userId} className="hover:bg-gray-50/50 transition-colors group">
                                                     <td className="px-8 py-5">
                                                         <div className={`flex items-center gap-4 ${isEliminated ? 'opacity-50' : ''}`}>
-                                                            <div className="w-10 h-10 border border-border-light flex items-center justify-center text-xs font-bold text-primary-burgundy bg-white shadow-sm italic">
-                                                                {assignment.firstName?.charAt(0)}{assignment.lastName?.charAt(0)}
+                                                            <div className="w-10 h-10 border border-border-light flex items-center justify-center text-xs font-bold text-primary-burgundy bg-white shadow-sm italic overflow-hidden rounded-full">
+                                                                {user?.profilePictureUrl ? (
+                                                                    <img src={user.profilePictureUrl} alt={`${assignment.firstName} ${assignment.lastName}`} className="w-full h-full object-cover" />
+                                                                ) : (
+                                                                    <>{assignment.firstName?.charAt(0)}{assignment.lastName?.charAt(0)}</>
+                                                                )}
                                                             </div>
                                                             <div>
                                                                 <p className={`text-sm font-bold ${isEliminated ? 'text-text-muted line-through' : 'text-text-main group-hover:text-primary-burgundy'} transition-colors`}>
@@ -648,8 +653,15 @@ const SpoonAssassins = () => {
                                     <div key={attempt.id} className="flex flex-col gap-4 border-b border-border-light pb-6 group last:border-0 last:pb-0">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div className="size-9 border border-border-light bg-white text-primary-burgundy flex items-center justify-center text-[10px] font-bold italic">
-                                                    {attempt.killerName?.split(' ').map(n => n[0]).join('')}
+                                                <div className="size-9 border border-border-light bg-white text-primary-burgundy flex items-center justify-center text-[10px] font-bold italic overflow-hidden rounded-full">
+                                                    {(() => {
+                                                        const killerUser = attempt.killerId ? getUserById(attempt.killerId) : users.find(u => (u.firstName + ' ' + u.lastName) === attempt.killerName);
+                                                        return killerUser?.profilePictureUrl ? (
+                                                            <img src={killerUser.profilePictureUrl} alt={attempt.killerName} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            attempt.killerName?.split(' ').map(n => n[0]).join('')
+                                                        );
+                                                    })()}
                                                 </div>
                                                 <div>
                                                     <p className="text-xs font-bold text-text-main uppercase">
