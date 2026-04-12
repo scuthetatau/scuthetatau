@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { firestore } from '../../firebase';
-import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { checkUserRole } from './auth';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -12,6 +12,7 @@ const SpoonAssassins = () => {
     const [assignments, setAssignments] = useState([]);
     const [eliminatedUsers, setEliminatedUsers] = useState([]);
     const [pendingIntel, setPendingIntel] = useState([]);
+    const [roundEndTimeStr, setRoundEndTimeStr] = useState('');
 
     // UI State
     const [loading, setLoading] = useState(true);
@@ -108,6 +109,22 @@ const SpoonAssassins = () => {
             .filter(target => target.isEliminated)
             .map(target => target.userId);
         setEliminatedUsers(eliminatedList);
+        
+        try {
+            const configDoc = await getDoc(doc(firestore, 'game_config', 'spoon_assassins'));
+            if (configDoc.exists()) {
+                const data = configDoc.data();
+                if (data.roundEndTime) {
+                    const dateObj = data.roundEndTime.toDate ? data.roundEndTime.toDate() : new Date(data.roundEndTime);
+                    const tzOffset = dateObj.getTimezoneOffset() * 60000;
+                    const localISOTime = (new Date(dateObj.getTime() - tzOffset)).toISOString().slice(0, 16);
+                    setRoundEndTimeStr(localISOTime);
+                }
+            }
+        } catch (e) {
+            console.error('SpoonAssassins: Could not fetch config', e);
+        }
+
         console.log('SpoonAssassins: Restricted data fetched successfully.');
     };
 
@@ -321,6 +338,22 @@ const SpoonAssassins = () => {
         }
     };
 
+    const handleSaveRoundTime = async () => {
+        try {
+            if (!roundEndTimeStr) {
+                await setDoc(doc(firestore, 'game_config', 'spoon_assassins'), { roundEndTime: null }, { merge: true });
+                showNotification('success', 'Round timer disabled.');
+                return;
+            }
+            const dateObj = new Date(roundEndTimeStr);
+            await setDoc(doc(firestore, 'game_config', 'spoon_assassins'), { roundEndTime: dateObj.toISOString() }, { merge: true });
+            showNotification('success', 'Round clock updated successfully!');
+        } catch (error) {
+            console.error('Error saving round time:', error);
+            showNotification('error', 'Failed to set round clock.');
+        }
+    };
+
     const handleResetGame = async () => {
         if (!window.confirm('WARNING: This will PERMANENTLY DELETE all targets and assassination attempts. This action cannot be undone. Are you sure you want to reset the game?')) {
             return;
@@ -384,6 +417,20 @@ const SpoonAssassins = () => {
         });
 
         return ordered;
+    };
+
+    const handleOpenBuilder = () => {
+        if (assignments.length > 0) {
+            const ordered = getOrderedChain();
+            const newChain = ordered.map(a => ({
+                userId: a.userId,
+                targetId: a.targetId
+            }));
+            setChain(newChain);
+        } else {
+            setChain([{ userId: '', targetId: '' }]);
+        }
+        setViewMode('builder');
     };
 
     const filteredChain = getOrderedChain().filter(a =>
@@ -608,10 +655,10 @@ const SpoonAssassins = () => {
                                 </p>
                                 {viewMode === 'manifest' ? (
                                     <button
-                                        onClick={() => setViewMode('builder')}
+                                        onClick={handleOpenBuilder}
                                         className="w-full bg-brand-gold text-black py-4 font-bold text-xs uppercase tracking-[0.2em] hover:brightness-105 active:scale-[0.98] transition-all shadow-md"
                                     >
-                                        SHUFFLE & ASSIGN TARGETS
+                                        EDIT & ASSIGN TARGETS
                                     </button>
                                 ) : (
                                     <button
@@ -622,6 +669,28 @@ const SpoonAssassins = () => {
                                     </button>
                                 )}
                             </div>
+
+                            <div>
+                                <p className="text-sm font-bold text-text-main mb-2 tracking-tight">Round Clock</p>
+                                <p className="text-[10px] text-text-muted mb-4 uppercase tracking-widest leading-relaxed">
+                                    Set the deadline for the current round (PST).
+                                </p>
+                                <div className="flex flex-col gap-2">
+                                    <input
+                                        type="datetime-local"
+                                        value={roundEndTimeStr}
+                                        onChange={(e) => setRoundEndTimeStr(e.target.value)}
+                                        className="w-full border border-border-light bg-gray-50/50 px-4 py-3 text-sm outline-none focus:border-brand-gold transition-all font-mono"
+                                    />
+                                    <button
+                                        onClick={handleSaveRoundTime}
+                                        className="w-full border border-border-light bg-white text-text-main py-4 font-bold text-xs uppercase tracking-[0.2em] hover:bg-gray-50 transition-all shadow-sm"
+                                    >
+                                        Update Round Clock
+                                    </button>
+                                </div>
+                            </div>
+
                             <div className="grid grid-cols-2 gap-4">
                                 <button className="flex flex-col items-center justify-center p-4 border border-border-light hover:border-primary-burgundy transition-all group">
                                     <span className="material-symbols-outlined text-text-muted group-hover:text-primary-burgundy transition-colors mb-2">campaign</span>
