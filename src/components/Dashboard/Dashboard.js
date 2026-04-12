@@ -277,46 +277,49 @@ const SpoonAssassinsCard = ({ userId }) => {
         const fetchSpoonInfo = async () => {
             if (!userId) return;
             try {
-                // Fetch user's own target info
-                let targetDoc = await getDoc(doc(firestore, 'targets', userId));
-                let currentSpoonData = targetDoc.exists() ? targetDoc.data() : null;
+                // Fetch all targets first to optimize reads and enable cycle detection
+                const targetsSnapshot = await getDocs(collection(firestore, 'targets'));
+                const allTargets = targetsSnapshot.docs.map(doc => doc.data());
+                
+                const targetsMap = new Map();
+                allTargets.forEach(t => targetsMap.set(t.userId, t));
+
+                let currentSpoonData = targetsMap.get(userId) || null;
 
                 // Logic: If current target is eliminated, get their target, recursively
                 if (currentSpoonData && currentSpoonData.targetId && currentSpoonData.isEliminated === false) {
                     let tempTargetId = currentSpoonData.targetId;
-                    let targetIsEliminated = false;
-                    let currentTargetInfo = null;
-
-                    // Check if current target is eliminated
-                    const checkTargetDoc = await getDoc(doc(firestore, 'targets', tempTargetId));
-                    if (checkTargetDoc.exists() && checkTargetDoc.data().isEliminated) {
-                        targetIsEliminated = true;
-                        currentTargetInfo = checkTargetDoc.data();
-                    }
+                    let currentTargetInfo = targetsMap.get(tempTargetId);
+                    
+                    const visitedIds = new Set([userId]); // Prevent infinite cycles
 
                     // Loop to find the next alive target in the chain
-                    while (targetIsEliminated && currentTargetInfo && currentTargetInfo.targetId) {
+                    while (currentTargetInfo && currentTargetInfo.isEliminated) {
+                        if (visitedIds.has(currentTargetInfo.userId)) {
+                            // Infinite loop detected (everyone is eliminated or chain is broken)
+                            currentTargetInfo = null;
+                            break;
+                        }
+                        visitedIds.add(currentTargetInfo.userId);
+                        
                         const nextTargetId = currentTargetInfo.targetId;
-                        const nextTargetDoc = await getDoc(doc(firestore, 'targets', nextTargetId));
-
-                        if (nextTargetDoc.exists()) {
-                            const nextTargetData = nextTargetDoc.data();
-                            if (nextTargetData.isEliminated) {
-                                tempTargetId = nextTargetId;
-                                currentTargetInfo = nextTargetData;
-                            } else {
-                                // Found an alive target!
-                                targetIsEliminated = false;
-                                currentTargetInfo = nextTargetData;
-                            }
-                        } else {
-                            // Target chain broken or target doc missing
+                        currentTargetInfo = targetsMap.get(nextTargetId);
+                        
+                        // If the next target is ourselves and we are alive, we've won
+                        if (currentTargetInfo && currentTargetInfo.userId === userId) {
                             break;
                         }
                     }
 
-                    // If we found a new alive target, update the user's target document
-                    if (currentTargetInfo && currentTargetInfo.userId !== currentSpoonData.targetId && !currentTargetInfo.isEliminated) {
+                    if (currentTargetInfo && currentTargetInfo.userId === userId) {
+                        // User has won! Update local display state
+                        currentSpoonData = {
+                            ...currentSpoonData,
+                            targetId: null,
+                            targetName: 'YOU WON! (LAST ONE STANDING)'
+                        };
+                    } else if (currentTargetInfo && currentTargetInfo.userId !== currentSpoonData.targetId && !currentTargetInfo.isEliminated) {
+                        // We found a new alive target, update the user's target document
                         const updatedData = {
                             ...currentSpoonData,
                             targetId: currentTargetInfo.userId,
@@ -324,14 +327,17 @@ const SpoonAssassinsCard = ({ userId }) => {
                         };
                         await setDoc(doc(firestore, 'targets', userId), updatedData);
                         currentSpoonData = updatedData;
+                    } else if (!currentTargetInfo && currentSpoonData.targetId) {
+                        // Target chain broken or everyone dead
+                        currentSpoonData = {
+                            ...currentSpoonData,
+                            targetId: null,
+                            targetName: 'NO VALID TARGETS LEFT'
+                        };
                     }
                 }
 
                 setSpoonData(currentSpoonData);
-
-                // Fetch all targets to count alive players
-                const targetsSnapshot = await getDocs(collection(firestore, 'targets'));
-                const allTargets = targetsSnapshot.docs.map(doc => doc.data());
                 setAliveCount(allTargets.filter(t => !t.isEliminated).length);
                 setTotalActiveCount(allTargets.length);
 
@@ -400,7 +406,7 @@ const SpoonAssassinsCard = ({ userId }) => {
                     ) : spoonData?.isEliminated ? (
                         <div className="bg-red-50 p-4 rounded-2xl border border-red-100">
                             <p className="text-[10px] uppercase font-bold text-red-500 mb-1 tracking-widest">Status</p>
-                            <p className="text-2xl font-anton text-red-600 uppercase italic tracking-tight">KILLED</p>
+                            <p className="text-2xl font-anton text-red-600 uppercase italic tracking-tight">YOU HAVE BEEN ASSASSINATED!</p>
                         </div>
                     ) : (
                         <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
@@ -423,7 +429,7 @@ const SpoonAssassinsCard = ({ userId }) => {
             </div>
 
             <a
-                href="https://docs.google.com/document/d/1DmNGhpRPcp2gjwYMq4Eh3rGO87Pm7l-dwk-QgcfO22g/edit?usp=sharing"
+                href="https://docs.google.com/document/d/1YIwmerou7Alri_lssywMd6uZQ800JDwS8J8C2Ki_IJk/edit?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all duration-300 font-semibold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 text-slate-600"
