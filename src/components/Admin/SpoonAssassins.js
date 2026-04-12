@@ -53,7 +53,8 @@ const SpoonAssassins = () => {
             // 1. Fetch Users FIRST (Publicly readable)
             console.log('SpoonAssassins: Fetching users...');
             const usersSnapshot = await getDocs(collection(firestore, 'users'));
-            const usersList = usersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            // Filter out dropped users so they don't get added to target chains
+            const usersList = usersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })).filter(u => !u.dropped);
             setUsers(usersList);
 
             // 2. Identify Current User & Check Admin Status
