@@ -29,3 +29,5 @@ src/script.py
 *.swo
 .DS_Store!
 /SCU Theta Tau Firebase Admin SDK.json
+/firestore.rules
+/storage.rules
