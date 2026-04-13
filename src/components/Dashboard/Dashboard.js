@@ -417,7 +417,7 @@ const SpoonAssassinsCard = ({ userId }) => {
 
                     <div className="grid grid-cols-2 gap-4 pt-2">
                         <div>
-                            <p className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-widest">Round Clock</p>
+                            <p className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-widest">Socks enables in:</p>
                             <p className="text-sm font-bold font-mono tracking-tight text-slate-700">{timeLeft || 'Standby...'}</p>
                         </div>
                         <div>
@@ -592,7 +592,7 @@ const Dashboard = () => {
 
                 <div className="flex flex-col gap-8">
                     {/*ENABLE AND RE ENABLE CARD AS NEEDED*/}
-                    {/*<SpoonAssassinsCard userId={user.id} />*/}
+                    <SpoonAssassinsCard userId={user.id} />
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <PointsCard points={points} userId={user.id} />
