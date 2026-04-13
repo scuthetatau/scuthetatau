@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { firestore } from '../../firebase';
 import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +22,10 @@ const SpoonAssassins = () => {
 
     // Builder State
     const [chain, setChain] = useState([{ userId: '', targetId: '' }]);
+    
+    // Drag and Drop Refs
+    const dragItem = useRef(null);
+    const dragOverItem = useRef(null);
 
     const navigate = useNavigate();
 
@@ -176,6 +180,29 @@ const SpoonAssassins = () => {
     const updatePlayerInChain = (index, userId) => {
         const newChain = [...chain];
         newChain[index].userId = userId;
+        setChain(newChain);
+    };
+
+    // Drag and Drop Logic
+    const handleDragStart = (e, position) => {
+        dragItem.current = position;
+    };
+
+    const handleDragEnter = (e, position) => {
+        dragOverItem.current = position;
+    };
+
+    const handleDragEnd = () => {
+        if (dragItem.current === null || dragOverItem.current === null) return;
+        if (dragItem.current === dragOverItem.current) return;
+
+        const newChain = [...chain];
+        const draggedContent = newChain.splice(dragItem.current, 1)[0];
+        newChain.splice(dragOverItem.current, 0, draggedContent);
+
+        dragItem.current = null;
+        dragOverItem.current = null;
+
         setChain(newChain);
     };
 
@@ -574,10 +601,21 @@ const SpoonAssassins = () => {
                                     </div>
                                     <div className="space-y-4">
                                         {chain.map((item, index) => (
-                                            <div key={index} className="flex items-center gap-4 bg-white p-4 border border-border-light shadow-sm">
-                                                <span className="text-xs font-bold text-primary-burgundy w-8">#{index + 1}</span>
+                                            <div 
+                                                key={index} 
+                                                draggable
+                                                onDragStart={(e) => handleDragStart(e, index)}
+                                                onDragEnter={(e) => handleDragEnter(e, index)}
+                                                onDragEnd={handleDragEnd}
+                                                onDragOver={(e) => e.preventDefault()}
+                                                className="flex items-center gap-4 bg-white p-4 border border-border-light shadow-sm hover:border-primary-burgundy hover:shadow-md transition-all cursor-move group"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <span className="material-symbols-outlined text-text-muted group-hover:text-primary-burgundy text-sm">drag_indicator</span>
+                                                    <span className="text-xs font-bold text-primary-burgundy w-6">#{index + 1}</span>
+                                                </div>
                                                 <select
-                                                    className="flex-1 bg-transparent border-b border-border-light focus:border-primary-burgundy py-2 text-sm outline-none"
+                                                    className="flex-1 bg-transparent border-b border-border-light focus:border-primary-burgundy py-2 text-sm outline-none cursor-pointer"
                                                     value={item.userId}
                                                     onChange={(e) => updatePlayerInChain(index, e.target.value)}
                                                 >
