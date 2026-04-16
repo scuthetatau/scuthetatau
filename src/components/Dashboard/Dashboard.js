@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { auth, firestore } from '../../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import EditUserPopup from './EditUserPopup';
@@ -275,84 +275,21 @@ const SpoonAssassinsCard = ({ userId }) => {
 
     useEffect(() => {
         const fetchSpoonInfo = async () => {
-            if (!userId) return;
+            if (!userId || !auth.currentUser) return;
             try {
-                // Fetch all targets first to optimize reads and enable cycle detection
-                const targetsSnapshot = await getDocs(collection(firestore, 'targets'));
-                const allTargets = targetsSnapshot.docs.map(doc => doc.data());
-                
-                const targetsMap = new Map();
-                allTargets.forEach(t => targetsMap.set(t.userId, t));
+                const idToken = await auth.currentUser.getIdToken();
+                const response = await fetch('/api/spoon-assassins', {
+                    headers: { Authorization: `Bearer ${idToken}` }
+                });
+                if (!response.ok) throw new Error('Failed to fetch spoon data');
+                const data = await response.json();
 
-                let currentSpoonData = targetsMap.get(userId) || null;
+                setSpoonData(data.userTarget);
+                setAliveCount(data.aliveCount);
+                setTotalActiveCount(data.totalActiveCount);
 
-                // Logic: If current target is eliminated, get their target, recursively
-                if (currentSpoonData && currentSpoonData.targetId && currentSpoonData.isEliminated === false) {
-                    let tempTargetId = currentSpoonData.targetId;
-                    let currentTargetInfo = targetsMap.get(tempTargetId);
-                    
-                    const visitedIds = new Set([userId]); // Prevent infinite cycles
-
-                    // Loop to find the next alive target in the chain
-                    while (currentTargetInfo && currentTargetInfo.isEliminated) {
-                        if (visitedIds.has(currentTargetInfo.userId)) {
-                            // Infinite loop detected (everyone is eliminated or chain is broken)
-                            currentTargetInfo = null;
-                            break;
-                        }
-                        visitedIds.add(currentTargetInfo.userId);
-                        
-                        const nextTargetId = currentTargetInfo.targetId;
-                        currentTargetInfo = targetsMap.get(nextTargetId);
-                        
-                        // If the next target is ourselves and we are alive, we've won
-                        if (currentTargetInfo && currentTargetInfo.userId === userId) {
-                            break;
-                        }
-                    }
-
-                    if (currentTargetInfo && currentTargetInfo.userId === userId) {
-                        // User has won! Update local display state
-                        currentSpoonData = {
-                            ...currentSpoonData,
-                            targetId: null,
-                            targetName: 'YOU WON! (LAST ONE STANDING)'
-                        };
-                    } else if (currentTargetInfo && currentTargetInfo.userId !== currentSpoonData.targetId && !currentTargetInfo.isEliminated) {
-                        // We found a new alive target, update the user's target document
-                        const updatedData = {
-                            ...currentSpoonData,
-                            targetId: currentTargetInfo.userId,
-                            targetName: `${currentTargetInfo.firstName} ${currentTargetInfo.lastName}`.trim()
-                        };
-                        await setDoc(doc(firestore, 'targets', userId), updatedData);
-                        currentSpoonData = updatedData;
-                    } else if (!currentTargetInfo && currentSpoonData.targetId) {
-                        // Target chain broken or everyone dead
-                        currentSpoonData = {
-                            ...currentSpoonData,
-                            targetId: null,
-                            targetName: 'NO VALID TARGETS LEFT'
-                        };
-                    }
-                }
-
-                setSpoonData(currentSpoonData);
-                setAliveCount(allTargets.filter(t => !t.isEliminated).length);
-                setTotalActiveCount(allTargets.length);
-
-                // Fetch round end time from config
-                try {
-                    const configDoc = await getDoc(doc(firestore, 'game_config', 'spoon_assassins'));
-                    if (configDoc.exists()) {
-                        const data = configDoc.data();
-                        if (data.roundEndTime) {
-                            // Handle both Timestamp and string formats
-                            setRoundEndTime(data.roundEndTime.toDate ? data.roundEndTime.toDate() : new Date(data.roundEndTime));
-                        }
-                    }
-                } catch (configError) {
-                    console.warn('Could not fetch round timer config:', configError.message);
+                if (data.gameConfig?.roundEndTime) {
+                    setRoundEndTime(new Date(data.gameConfig.roundEndTime));
                 }
             } catch (error) {
                 console.error('Error fetching Spoon Assassins data:', error);
