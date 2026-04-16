@@ -541,7 +541,7 @@ const SpoonAssassins = () => {
                                             return (
                                                 <tr key={assignment.userId} className="hover:bg-gray-50/50 transition-colors group">
                                                     <td className="px-8 py-5">
-                                                        <div className={`flex items-center gap-4 ${isEliminated ? 'opacity-50' : ''}`}>
+                                                        <div className={`flex items-center gap-4 transition-opacity duration-700 ${isEliminated ? 'opacity-50' : 'opacity-100'}`}>
                                                             <div className="w-10 h-10 border border-border-light flex items-center justify-center text-xs font-bold text-primary-burgundy bg-white shadow-sm italic overflow-hidden rounded-full">
                                                                 {user?.profilePictureUrl ? (
                                                                     <img src={user.profilePictureUrl} alt={`${assignment.firstName} ${assignment.lastName}`} className="w-full h-full object-cover" />
@@ -550,7 +550,7 @@ const SpoonAssassins = () => {
                                                                 )}
                                                             </div>
                                                             <div>
-                                                                <p className={`text-sm font-bold ${isEliminated ? 'text-text-muted line-through' : 'text-text-main group-hover:text-primary-burgundy'} transition-colors`}>
+                                                                <p className={`text-sm font-bold transition-colors duration-700 ${isEliminated ? 'text-text-muted line-through' : 'text-text-main group-hover:text-primary-burgundy'}`}>
                                                                     {assignment.firstName} {assignment.lastName}
                                                                 </p>
                                                                 <p className="text-[10px] text-text-muted tracking-wider">#{assignment.userId.slice(-6)}</p>
@@ -558,12 +558,12 @@ const SpoonAssassins = () => {
                                                         </div>
                                                     </td>
                                                     <td className="px-8 py-5">
-                                                        <span className={`inline-flex items-center gap-2 px-0 py-1 text-[10px] font-bold uppercase ${isEliminated ? 'text-text-muted' : 'text-primary-burgundy border-b-2 border-brand-gold'}`}>
+                                                        <span className={`inline-flex items-center gap-2 px-0 py-1 text-[10px] font-bold uppercase transition-colors duration-700 ${isEliminated ? 'text-text-muted' : 'text-primary-burgundy border-b-2 border-brand-gold'}`}>
                                                             {isEliminated ? 'ELIMINATED' : 'ACTIVE'}
                                                         </span>
                                                     </td>
                                                     <td className="px-8 py-5">
-                                                        <p className={`text-sm font-medium italic ${isEliminated ? 'text-text-muted' : 'text-text-main'}`}>
+                                                        <p className={`text-sm font-medium italic transition-colors duration-700 ${isEliminated ? 'text-text-muted' : 'text-text-main'}`}>
                                                             {isEliminated ? 'NONE' : assignment.targetName}
                                                         </p>
                                                     </td>
@@ -573,7 +573,7 @@ const SpoonAssassins = () => {
                                                             className="text-text-muted hover:text-primary-burgundy transition-colors"
                                                             title={isEliminated ? "Revive" : "Eliminate"}
                                                         >
-                                                            <span className="material-symbols-outlined">more_horiz</span>
+                                                            <span className="material-symbols-outlined">skull</span>
                                                         </button>
                                                     </td>
                                                 </tr>
