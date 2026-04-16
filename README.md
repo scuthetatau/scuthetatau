@@ -1,73 +1,9 @@
-# SCU Theta Tau Chapter Website
-
-Professional web platform for the Santa Clara University chapter of Theta Tau, the nation's oldest and largest professional engineering fraternity. This project serves as a central hub for brothers, alumni, and prospective recruits.
-
----
-
-## 🚀 Vision & Purpose
-
-The platform provides an integrated experience for:
-- **Prospective Recruits**: Learning about the fraternity, upcoming rush events, and chapter values.
-- **Active Brothers**: Managing chapter operations, tracking participation points, and coordinating "BroDates".
-- **Alumni**: Maintaining connections through an interactive database and family tree.
-- **Spoon Assassins**: Hosting an internal, automated game for chapter bonding.
-
----
-
-##  Tech Stack
-
-- **Frontend**: React.js with CSS3 (Vanilla + Animations)
-- **Backend/Database**: Firebase (Auth, Firestore, Storage)
-- **Deployment**: Vercel
-- **State Management**: React Hooks & Context API
-
----
-
-##  Key Features
-
-### 1. **Dynamic Brotherhood Management**
-- **Meet the Brothers**: Visual directory of active members with filtered views by class and major.
-- **Family Tree**: Interactive D3-powered visualization of the chapter's lineage.
-- **Alumni Database**: searchable records for professional networking.
-
-### 2. **Scribe/Admin Dashboard**
-- **Point Tracking**: Automated logging and visualization of fraternity points for events.
-- **Event Management**: Quick-add tools for Scribes to broadcast chapter meetings and social events.
-- **BroDates**: Algorithmic pairing and management of brotherhood bonding sessions.
-
-### 3. **The "Spoon Assassins" Game**
-- Integrated game logic for the chapter's traditional competition.
-- Automatic target forwarding and elimination logging via Firestore.
-
----
-
-## ☁️ Firebase & Backend Architecture
-
-The project relies heavily on **Firebase** for a serverless architecture.
-
-### Firestore Data Model
-
-- **`users/`**: Profile data (name, email, class, points, role).
-- **`admins/`**: Designated roles (Webmaster, Scribe, Brotherhood Chair) used for permission checks.
-- **`events/`**: Chapter events with timestamped participation metadata.
-- **`brodates/`**: Group assignments and status for brotherhood hangouts.
-- **`targets/` / `eliminated/`**: State management for the Spoon Assassins game.
-- **`authorizedEmails/`**: Whitelist for initial user registration to ensure only brothers can join.
-
-### Security Rules
-Standardized roles are enforced via `firestore.rules`:
-- **Webmaster**: Full CRUD access for site maintenance.
-- **Scribe**: Point management and event creation.
-- **Brotherhood Chair**: Managed control over games and social pairings.
-- **Public**: Read-only access to promotional content (Home, Rush, About Us).
-
----
-
 ## 💻 Local Development
 
 ### Prerequisites
 - Node.js (v18+)
 - npm
+- [Vercel CLI](https://vercel.com/docs/cli) for testing API routes locally
 
 ### Installation
 1. Clone the repository:
@@ -78,7 +14,20 @@ Standardized roles are enforced via `firestore.rules`:
    ```bash
    npm install
    ```
-3. Create a `.env` file in the root directory with your Firebase configuration:
+3. Install and sign in to the Vercel CLI:
+   ```bash
+   npm i -g vercel
+   vercel login
+   ```
+4. Link the project to your local checkout:
+   ```bash
+   vercel link
+   ```
+5. Pull down the project environment variables from Vercel:
+   ```bash
+   vercel env pull
+   ```
+6. Create or update a `.env` file in the root directory with your Firebase configuration:
    ```env
    REACT_APP_FIREBASE_API_KEY=your_key
    REACT_APP_FIREBASE_AUTH_DOMAIN=your_domain
@@ -87,21 +36,35 @@ Standardized roles are enforced via `firestore.rules`:
    REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_id
    REACT_APP_FIREBASE_APP_ID=your_id
    ```
-4. Start the development server:
+7. Start the app locally:
    ```bash
    npm start
    ```
 
+### Testing API Routes Locally
+If you need to test API routes, serverless functions, or Vercel-specific behavior, use:
+bash `vercel dev`
+
+
+This runs your app in a Vercel-like local environment and is the preferred way to verify API changes before deploying.
+
 ### Available Scripts
 - `npm start`: Runs the app in development mode.
 - `npm run build`: Bundles the app for production.
-- `npm run deploy`: Deploys the latest build to GitHub Pages.
+- `vercel dev`: Runs the project locally with Vercel's runtime for API testing.
+- `vercel deploy`: Deploys the project through the Vercel CLI.
 
 ---
 
 ## 📦 Deployment & Maintenance
 
 The site is configured for automated deployment via **Vercel**.
-Log in using the Theta Tau vercel account to make changes there as needed.
+Log in using the Theta Tau Vercel account to make changes there as needed.
+
+For Vercel CLI workflows:
+- Use `vercel login` before running CLI commands.
+- Use `vercel link` once per local checkout to connect it to the correct Vercel project.
+- Use `vercel env pull` to sync environment variables locally.
+- Use `vercel dev` whenever you need to test API-related changes.
 
 Ensure all changes are committed and pushed to `main`.
