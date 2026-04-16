@@ -54,15 +54,14 @@ export default async function handler(req, res) {
                     targetId: null,
                     targetName: 'YOU WON! (LAST ONE STANDING)'
                 };
-            } else if (currentTargetInfo && currentTargetInfo.userId !== currentSpoonData.targetId && !currentTargetInfo.isEliminated) {
-                // We found a new alive target, update the user's target document
-                const updatedData = {
+            } else if (currentTargetInfo && !currentTargetInfo.isEliminated) {
+                // Found next alive target — compute for display only, never persist.
+                // Persisting would overwrite the original targetId, breaking revival.
+                currentSpoonData = {
                     ...currentSpoonData,
                     targetId: currentTargetInfo.userId,
                     targetName: `${currentTargetInfo.firstName} ${currentTargetInfo.lastName}`.trim()
                 };
-                await db.collection('targets').doc(userId).set(updatedData);
-                currentSpoonData = updatedData;
             } else if (!currentTargetInfo && currentSpoonData.targetId) {
                 // Target chain broken or everyone dead
                 currentSpoonData = {
