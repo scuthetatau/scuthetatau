@@ -142,6 +142,8 @@ const FamilyTree = () => {
             }
         };
 
+        // TODO: For some reason on mobile, the dropped greyed out profile pictures do not load where they are supposed to. They instead will render on the top left of the screen. No idea why. Good luck fixing.
+
         return (
             <g 
                 className={`node ${isAlumni ? 'alumni' : ''} ${isFounder ? 'founder' : ''}`}
