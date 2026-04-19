@@ -14,7 +14,18 @@ export default async function handler(req, res) {
 
     try {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const userId = decodedToken.uid;
+        const userEmail = decodedToken.email;
+
+        if (!userEmail) {
+            return res.status(400).json({ error: 'User token does not contain an email' });
+        }
+
+        const userSnapshot = await db.collection('users').where('email', '==', userEmail).limit(1).get();
+        if (userSnapshot.empty) {
+            return res.status(404).json({ error: 'User not found in database' });
+        }
+        
+        const userId = userSnapshot.docs[0].id;
 
         // Fetch all targets to calculate alive count and process reassignment
         const targetsSnapshot = await db.collection('targets').get();
