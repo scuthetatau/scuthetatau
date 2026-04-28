@@ -31,3 +31,5 @@ src/script.py
 /SCU Theta Tau Firebase Admin SDK.json
 /firestore.rules
 /storage.rules
+.vercel
+.env*.local

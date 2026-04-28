@@ -354,7 +354,7 @@ const SpoonAssassinsCard = ({ userId }) => {
 
                     <div className="grid grid-cols-2 gap-4 pt-2">
                         <div>
-                            <p className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-widest">Socks enables in:</p>
+                            <p className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-widest">GET FIRST KILL BY:</p>
                             <p className="text-sm font-bold font-mono tracking-tight text-slate-700">{timeLeft || 'Standby...'}</p>
                         </div>
                         <div>
