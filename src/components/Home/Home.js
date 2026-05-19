@@ -91,12 +91,13 @@ const Home = () => {
                             <h2 className="text-primary font-anton text-5xl md:text-7xl mb-8 leading-tight">A MESSAGE FROM<br />THE REGENT</h2>
                             <div className="space-y-6 text-lg leading-relaxed text-gray-600 dark:text-gray-400">
                                 {/*<p className="font-semibold text-charcoal dark:text-white text-xl">Hi!</p>*/}
-                                <p>Hi!</p>
-                                <p>My name is Xander Fruin, and I'm currently a senior at SCU majoring in Mechanical Engineering with a minor in Aerospace Engineering, part of the Theta class. Theta Tau has been integral to my college journey, where I've been able to grow professionally and meet some of my closest friends.</p>
-                                <p>Theta Tau stands out as a fraternity where excellence is nurtured in every aspect. Our members are not only dedicated to their academic and professional achievements, but they also bring a vibrant, engaging spirit to everything we do.</p>
+                                <p>Hey!</p>
+                                <p>My name is Logan Catoera, and I am currently a senior at Santa Clara University studying Mechanical Engineering with a minor in Aerospace Engineering and part of the Theta class! Joining Theta Tau has played an important part in my college career as I have grown professionally and made unforgettable memories with the community here.</p>
+                                <p>Theta Tau is a fraternity where excellence is encouraged in every aspect. The members of this fraternity are not only dedicated to their own academic pursuits and professional achievements, but also bring a helping hand to others with their vibrant and engaging personality.</p>
+                                <p>Rah Rah Theta Tau!</p>
                                 <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
                                     <p className="font-bold text-primary italic">In H & T,</p>
-                                    <p className="font-anton text-2xl mt-2 text-charcoal dark:text-white">Xander Fruin</p>
+                                    <p className="font-anton text-2xl mt-2 text-charcoal dark:text-white">Logan Catoera</p>
                                     <p className="text-sm uppercase tracking-widest text-accent font-bold">Regent | Upsilon Epsilon Chapter</p>
                                 </div>
                             </div>
