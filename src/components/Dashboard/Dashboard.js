@@ -325,7 +325,7 @@ const SpoonAssassinsCard = ({ userId }) => {
 
     // If there's no game active at all, don't show the card
     if (!spoonData && totalActiveCount === 0) return null;
-
+    /*
     return (
         <section className="glass p-8 rounded-3xl flex flex-col justify-between group hover:border-primary/30 transition-all border border-transparent">
             <div>
@@ -364,7 +364,7 @@ const SpoonAssassinsCard = ({ userId }) => {
                     </div>
                 </div>
             </div>
-
+            
             <a
                 href="https://docs.google.com/document/d/1YIwmerou7Alri_lssywMd6uZQ800JDwS8J8C2Ki_IJk/edit?usp=sharing"
                 target="_blank"
@@ -375,8 +375,8 @@ const SpoonAssassinsCard = ({ userId }) => {
             </a>
         </section>
     );
+    */
 };
-
 const FooterLinks = ({ user }) => {
     // Mapping roles to links, similar to old AdminButtons
     // If user has access to any admin feature, show relevant links.
