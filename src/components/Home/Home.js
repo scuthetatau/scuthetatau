@@ -62,7 +62,7 @@ const Home = () => {
 
                     <div className="flex flex-col md:flex-row gap-6 justify-center items-center reveal active" style={{ transitionDelay: "600ms" }}>
                         <a className="group relative px-10 py-4 bg-accent text-black font-bold uppercase tracking-widest rounded-sm overflow-hidden transition-all hover:scale-105" href="/rush">
-                            <span className="relative z-10">Rush 2026</span>
+                            <span className="relative z-10">Rush 2027</span>
                         </a>
                         <a className="px-10 py-4 border-2 border-white/30 text-white font-bold uppercase tracking-widest rounded-sm hover:bg-white hover:text-black transition-all glassmorphism" href="/about-us">
                             Learn More
